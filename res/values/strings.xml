@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="app_name">Othello Game</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Othello</string>
+    <string name="FinishButton">Finish</string> 
+
+</resources>
