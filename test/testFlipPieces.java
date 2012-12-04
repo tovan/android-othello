@@ -14,22 +14,15 @@ public class testFlipPieces extends TestCase {
 
 	public testFlipPieces() {
 		this.gameBoard = new GameBoard();
-		gameBoard.setUpBoard();
+
 	}
 
-	public void testFlipHorizontalRight() {
+	public void testFlipVertical() {
 		gameBoard.setUpBoard();
 		gameBoard.makeMove(Color.WHITE, 4, 3);
 
 		assertTrue(Color.WHITE == gameBoard.getPieceAt(4, 4).getColor());
 		assertEquals(numPiecesOccupied(), 6);
-	}
-	public void testFlipVerticalUp(){
-		gameBoard.setUpBoard();
-		gameBoard.makeMove(Color.WHITE, 6, 5);
-		assertTrue(Color.WHITE == gameBoard.getPieceAt(5, 5).getColor());
-		assertEquals(numPiecesOccupied(), 6);
-	
 	}
 
 	public void testComputeEdgePieces() {
@@ -42,12 +35,12 @@ public class testFlipPieces extends TestCase {
 		gameBoard.getBoardOperator().setMyColor(Color.BLACK);
 
 		oper.getSurroundingPieces(gameBoard.getPieceAt(4, 2));
-		GamePiece edgePiece = oper.findExistingEdgePieces(
+		ArrayList<GamePiece> edgePieces = oper.findExistingEdgePieces(
 				Color.BLACK, gameBoard.getPieceAt(4, 3));
 		oper.isPossibleMove(Color.BLACK, 4, 2);
 
-		assertNotNull(edgePiece);
-		assertTrue(edgePiece.getColor() == Color.BLACK);
+		assertEquals(edgePieces.size(), 1);
+		assertTrue(edgePieces.get(0).getColor() == Color.BLACK);
 		assertTrue(gameBoard.computePiecesGained(gameBoard.getPieceAt(4, 2)) == 3);
 	}
 

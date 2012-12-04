@@ -14,7 +14,6 @@ public class GameBoard {
 	public GameBoard() {
 		board = new GamePiece[9][9];
 		boardOperator = new BoardOperator(board);
-		piecesMoved = new Stack<GamePiece>();
 	}
 
 	public GamePiece[][] getBoard() {
@@ -42,7 +41,7 @@ public class GameBoard {
 			else {
 				captureLocation(color, x, y);
 				GamePiece nextMove = board[x][y];
-				boardOperator.isPossibleMove(color, x, y);//this sets the edgePieces
+//				boardOperator.isPossibleMove(color, x, y);//this sets the edgePieces
 				this.flipPieces(color, nextMove, nextMove.getEdgePieces());
 				makeComputerMove();
 				madeMove = true;
@@ -82,8 +81,8 @@ public class GameBoard {
 	public void flipPieces(int color, GamePiece nextMove, ArrayList<GamePiece> edgePieces) {
 		// nextMove --> move just taken
 		// has list of edgePieces at other end of pieces to be turned over
-		int piecesGained = computePiecesGained(nextMove);
 		for(GamePiece edgePiece: edgePieces){
+			int piecesGained = computePiecesGained(nextMove, edgePiece);
 			if (nextMove.getX() == edgePiece.getX()) {
 				flipHorizontally(color, nextMove, piecesGained, edgePiece);
 			}
@@ -143,31 +142,61 @@ public class GameBoard {
 				newX += xPerMove;
 				newY += xPerMove;
 				}
+			else{
+				return; 
+			}
 		}
 	}
+	public int computePiecesGained(GamePiece nextMove, GamePiece anEdgePiece){
+		int distance = 0;
+		// can be a distance of only x, y didn't change
+		if (anEdgePiece.getLocation().y == nextMove.getY()) {
+			distance = Math.abs(anEdgePiece.getLocation().x - nextMove.getX());
+		}
+		// can be a distance of only y, x didn't change
+		else if (anEdgePiece.getLocation().x == nextMove.getX()) {
+			distance = Math.abs(anEdgePiece.getLocation().y - nextMove.getY());
+		}
+		// can be diagonally apart
+		else {
+			//vertical and horizontal distances must be the same in a square grid
+			distance = Math.abs(anEdgePiece.getLocation().y - nextMove.getY());
+		}
+		// pieces captured are 1 less than distance
+				return distance - 1;
+			
+	}
 	public int computePiecesGained(GamePiece piece) {
-		// generally there will be one edge piece, can be more
+		//uses list of endPieces of received in piece
 		int distance = 0;
 		for (int i = 0; i < piece.getEdgePieces().size(); i++) {
 			GamePiece currEdgePiece = piece.getEdgePieces().get(i);
 			// can be a distance of only x, y didn't change
 			if (currEdgePiece.getLocation().y == piece.getY()) {
-				distance = Math.abs(currEdgePiece.getLocation().x - piece.getX());
+				distance += Math.abs(currEdgePiece.getLocation().x - piece.getX());//must use += to have a cumulative sum over all edgePieces
 			}
 			// can be a distance of only y, x didn't change
 			else if (currEdgePiece.getLocation().x == piece.getX()) {
-				distance = Math.abs(currEdgePiece.getLocation().y - piece.getY());
+				distance += Math.abs(currEdgePiece.getLocation().y - piece.getY());
 			}
 			// can be diagonally apart
 			else {
 				//vertical and horizontal distances must be the same in a square grid
-				distance = Math.abs(currEdgePiece.getLocation().y - piece.getY());
+				distance += Math.abs(currEdgePiece.getLocation().y - piece.getY());
 			}
 		}
 		// pieces captured are 1 less than distance
 		return distance - 1;
 	}
-
+	public GamePiece getPieceAt(int i, int j) {
+		return this.board[i][j];
+	}
+	public void setPieceAt(int i, int j, GamePiece gamePiece){
+		this.board[i][j] = gamePiece;
+	}
+	public void setPieceAt(int i, int j, int color){
+		this.board[i][j].setColor(color);
+	}
 	public BoardOperator getBoardOperator() {
 		return boardOperator;
 	}
@@ -192,11 +221,7 @@ public class GameBoard {
 		}
 		return str.toString();
 	}
-
-	public GamePiece getPieceAt(int i, int j) {
-		return this.board[i][j];
-	}
-
+	
 	public void removeMove() {
 		// TODO Auto-generated method stub
 		//really must store prev. color

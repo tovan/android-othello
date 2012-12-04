@@ -89,4 +89,7 @@ public class GamePiece {
 	public boolean isOccupied() {
 		return color != null;
 	}
+	public void addEdgePiece(GamePiece edgePiece) {
+		edgePieces.add(edgePiece);
+	}
 }

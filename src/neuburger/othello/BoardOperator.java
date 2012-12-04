@@ -12,7 +12,7 @@ public class BoardOperator {
 	
 	public BoardOperator(GamePiece[][] board){
 		this.board = board;
-		setInitialBoard();
+		setInitialBoard();//each piece should know its location
 	}
 	public void setInitialBoard(){
 		for(int row = 0; row < board.length; row++){
@@ -36,42 +36,43 @@ public class BoardOperator {
 		return possibleMoves;
 	}
 	public boolean isPossibleMove(int color, int row, int col){
+		boolean isPossibleMove = false;
 		setMyColor(color);
 		if(spaceIsOccupied(row, col)){
-			return false;
+			return isPossibleMove;
 		}
 		//if piece is empty, check if surrounded by piece of other color
 		else {
 			ArrayList<GamePiece> surroundingPieces = getSurroundingPieces(board[row][col]);
-			ArrayList<GamePiece> edgePieces = new ArrayList<GamePiece>() ;
 			for (GamePiece piece : surroundingPieces){
-				edgePieces.addAll(findExistingEdgePieces(color, piece));
-				board[row][col].setEdgePieces(edgePieces);
+				GamePiece edgePiece = findExistingEdgePieces(color, piece);
+				if(edgePiece != null){
+					board[row][col].addEdgePiece(edgePiece);
+					isPossibleMove = true;
+				}
 			}
-			return edgePieces.size() > 0;
 		}
+		return isPossibleMove;
 	}
 
-	protected ArrayList<GamePiece> findExistingEdgePieces(int playersColor, GamePiece surroundingPiece){
+	public GamePiece findExistingEdgePieces(int playersColor, GamePiece surroundingPiece){
 		int otherColor = (playersColor == Color.WHITE? Color.BLACK: Color.WHITE);
-		//receives in a piece of opposite color from player's color
 		//method recursively calls itself to find blank spot at other end
-		//if blank spot is in board it is a possible move
-		ArrayList<GamePiece> edgePieces = new ArrayList<GamePiece>();
+		GamePiece edgePiece = null;
 		int nextX = surroundingPiece.getX()+surroundingPiece.getDirection().x;
 		int nextY = surroundingPiece.getY()+surroundingPiece.getDirection().y;
 		//check if in board (otherwise checking its color will throw an error)
 		if(inBoard(nextX, nextY)){
 			GamePiece nextPiece = board[nextX][nextY];
 			if(nextPiece.getColor()!= null && nextPiece.getColor() == playersColor){//we hit a piece on other end of blank spot that is player's color, so blank spot is a valid move
-				edgePieces.add(nextPiece);
+				edgePiece = nextPiece;
 			}
 			else if(nextPiece.getColor()!= null && nextPiece.getColor() == otherColor){
 				setDirection(surroundingPiece, nextPiece);
 				return findExistingEdgePieces(playersColor, nextPiece);
 			}
 		}
-		return edgePieces;
+		return edgePiece;
 	}
 	protected int potentialPiecesGained(GamePiece gamePiece, int myColor){
 		int piecesGained = 0;
@@ -113,7 +114,7 @@ public class BoardOperator {
 		int y = surroundingPiece.getY() - currentPiece.getY();
 		surroundingPiece.setDirection(x, y);
 	}
-	protected ArrayList<GamePiece> getSurroundingPieces(GamePiece currentPiece) {
+	public ArrayList<GamePiece> getSurroundingPieces(GamePiece currentPiece) {
 		ArrayList<GamePiece> surroundingPieces = new ArrayList<GamePiece>(); 
 		if(hasConnectionNorth(currentPiece)){
 			GamePiece northPiece = getConnectingOnNorth(currentPiece);

@@ -1,4 +1,4 @@
-package com.example.neuburger_othello;
+package neuburger_othello;
 
 import neuburger.othello.GameBoard;
 import android.annotation.SuppressLint;
@@ -45,8 +45,6 @@ public class BoardView extends View {
 		this.heightofBox = this.widthofBox;
 		// draw the grid
 		int[] gridColors = { Color.GREEN, Color.BLUE };
-		Log.d("on Draw ", "box sizes: width: " + widthofBox + " squareHeight: "
-				+ heightofBox);
 		for (int row = 0; row < 8; row++) {
 			for (int col = 0; col < 8; col++) {
 				int startX = col * widthofBox;
@@ -55,7 +53,8 @@ public class BoardView extends View {
 				int endY = (row + 1) * heightofBox;
 				int colorIndex = (col + row) % 2;
 				paint.setColor(gridColors[colorIndex]);
-				canvas.drawRect(new Rect(startX, startY, endX, endY), paint);
+				canvas.drawRect(startX, startY, endX,endY, paint);
+//				canvas.drawRect(new Rect(startX, startY, endX, endY), paint);
 				// draw pieces moved onto
 				/*Integer color = gameBoard.getPieceAt(row, col).getColor();
 				if (color != null) {

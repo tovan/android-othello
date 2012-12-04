@@ -1,4 +1,4 @@
-package com.example.neuburger_othello;
+package neuburger_othello;
 import android.graphics.Point;
 
 public class TranslatePointToBox {
