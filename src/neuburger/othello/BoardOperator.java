@@ -56,18 +56,19 @@ public class BoardOperator {
 	}
 
 	public GamePiece findExistingEdgePieces(int playersColor, GamePiece surroundingPiece){
-		int otherColor = (playersColor == Color.WHITE? Color.BLACK: Color.WHITE);
+		int otherColor = getOtherColor();
 		//method recursively calls itself to find blank spot at other end
 		GamePiece edgePiece = null;
 		int nextX = surroundingPiece.getX()+surroundingPiece.getDirection().x;
 		int nextY = surroundingPiece.getY()+surroundingPiece.getDirection().y;
 		//check if in board (otherwise checking its color will throw an error)
-		if(inBoard(nextX, nextY)){
+		if (inBoard(nextX, nextY)) {
 			GamePiece nextPiece = board[nextX][nextY];
-			if(nextPiece.getColor()!= null && nextPiece.getColor() == playersColor){//we hit a piece on other end of blank spot that is player's color, so blank spot is a valid move
+			if (nextPiece.getColor() != null && nextPiece.getColor() == playersColor) {
+				// we hit a piece on other end of blank spot that is player's
+				// color, so blank spot is a valid move
 				edgePiece = nextPiece;
-			}
-			else if(nextPiece.getColor()!= null && nextPiece.getColor() == otherColor){
+			} else if (nextPiece.getColor() != null && nextPiece.getColor() == otherColor) {
 				setDirection(surroundingPiece, nextPiece);
 				return findExistingEdgePieces(playersColor, nextPiece);
 			}
@@ -169,16 +170,7 @@ public class BoardOperator {
 	public int getOtherColor(){
 		return myColor == Color.BLACK? Color.WHITE: Color.BLACK;
 	}
-	/*
-		if(color == null){
-			return Color.black;
-		}
-		else{
-			return color == Color.white? Color.black: Color.white;
-		}
-	
-	}
-	*/
+
 	public void setMyColor(int myColor) {
 		this.myColor = myColor;
 	}

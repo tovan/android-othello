@@ -1,6 +1,3 @@
-package neuburger.othello;
-
-import java.util.ArrayList;
 
 import junit.framework.TestCase;
 import neuburger.othello.BoardOperator;
@@ -35,12 +32,12 @@ public class testFlipPieces extends TestCase {
 		gameBoard.getBoardOperator().setMyColor(Color.BLACK);
 
 		oper.getSurroundingPieces(gameBoard.getPieceAt(4, 2));
-		ArrayList<GamePiece> edgePieces = oper.findExistingEdgePieces(
+		GamePiece edgePiece = oper.findExistingEdgePieces(
 				Color.BLACK, gameBoard.getPieceAt(4, 3));
 		oper.isPossibleMove(Color.BLACK, 4, 2);
 
-		assertEquals(edgePieces.size(), 1);
-		assertTrue(edgePieces.get(0).getColor() == Color.BLACK);
+		assertNotNull(edgePiece);
+		assertTrue(edgePiece.getColor() == Color.BLACK);
 		assertTrue(gameBoard.computePiecesGained(gameBoard.getPieceAt(4, 2)) == 3);
 	}
 

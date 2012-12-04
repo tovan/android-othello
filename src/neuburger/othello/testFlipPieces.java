@@ -1,7 +1,5 @@
 package neuburger.othello;
 
-import java.util.ArrayList;
-
 import junit.framework.TestCase;
 import neuburger.othello.BoardOperator;
 import neuburger.othello.GameBoard;

@@ -30,30 +30,25 @@ public class GameBoard {
 
 	public boolean makeMove(int color, int x, int y) {
 		boolean madeMove = false;
-		if(boardOperator.inBoard(x, y)){
-			if (board[x][y].isOccupied()) { 
-				toggleColor(x, y);
-			}
-			 else if (!boardOperator.isPossibleMove(color, x, y)) {
-				 System.out.println("sorry but that is an invalid move!");
-				 madeMove = false;
-		 	}
-			else {
+		if (boardOperator.inBoard(x, y)) {
+			if (!boardOperator.isPossibleMove(color, x, y)) {
+				System.out.println("sorry but that is an invalid move!");
+				madeMove = false;
+			} else {
 				captureLocation(color, x, y);
 				GamePiece nextMove = board[x][y];
-//				boardOperator.isPossibleMove(color, x, y);//this sets the edgePieces
-				this.flipPieces(color, nextMove, nextMove.getEdgePieces());
+				flipPieces(color, nextMove, nextMove.getEdgePieces());
 				makeComputerMove();
 				madeMove = true;
 			}
-		}
-		return madeMove;
+		}return madeMove;
 	}
 
 	private void captureLocation(int color, int x, int y) {
 		board[x][y].setColor(color);
 	}
 
+	//will be used when I allow user to flip its own pieces
 	private void toggleColor(int x, int y) {
 		int newColor = getOppositeColor(board[x][y].getColor());
 		board[x][y].setColor(newColor);
@@ -69,13 +64,24 @@ public class GameBoard {
 			System.out.println("no moves can be made");
 		} 
 		else {
-			GamePiece nextMove = potentialMoves.get(potentialMoves.size()-1);
+			GamePiece nextMove = getStrategicPiece(potentialMoves);
 			captureLocation(Color.BLACK, nextMove.getX(),nextMove.getY());
 			System.out.println("black moved on: "+potentialMoves.get(potentialMoves.size()-1).getX()+ ","+potentialMoves.get(potentialMoves.size()-1).getY());
 			int piecesGained = computePiecesGained(nextMove);
 			this.flipPieces(Color.BLACK, nextMove, nextMove.getEdgePieces());
 			System.out.println("you have just captured " + piecesGained + " piece(s)!");
 		}
+	}
+	
+	public GamePiece getStrategicPiece(ArrayList<GamePiece> potentialMoves) {
+		for (GamePiece piece : potentialMoves) {
+			if (piece.getX() == 1 && piece.getY() == 1 || piece.getX() == 1 && piece.getY() == 8) {
+				return piece;
+			} else if (piece.getX() == 8 && piece.getY() == 1 || piece.getX() == 8 && piece.getY() == 8) {
+				return piece;
+			}
+		}
+		return potentialMoves.get(potentialMoves.size() - 1);
 	}
 
 	public void flipPieces(int color, GamePiece nextMove, ArrayList<GamePiece> edgePieces) {
@@ -100,12 +106,11 @@ public class GameBoard {
 		int totalY = Math.abs(nextMove.getY() - edgePiece.getY());
 		int yPerMove = totalY / (piecesGained + 1);
 		int minY = Math.min(nextMove.getY(), edgePiece.getY());
-		int endY = Math.max(nextMove.getY(), edgePiece.getY());
+		int maxY = Math.max(nextMove.getY(), edgePiece.getY());
 		int newY = minY + yPerMove;
-		while ((newY != endY)) {
+		while ((newY != maxY)) {
 			if(boardOperator.inBoard(edgePiece.getX(), newY)){
 				board[edgePiece.getX()][newY].setColor(color);
-//				nextMove = board[nextMove.getX()][newY];
 				newY += yPerMove;
 			}
 		}
@@ -116,17 +121,18 @@ public class GameBoard {
 		int totalX = Math.abs(nextMove.getX() - edgePiece.getX());
 		int xPerMove = totalX / (piecesGained + 1);
 		int minX = Math.min(nextMove.getX(), edgePiece.getX());
-		int endX = Math.max(nextMove.getX(), edgePiece.getX());
+		int maxX = Math.max(nextMove.getX(), edgePiece.getX());
 		int newX = minX + xPerMove;
-		while ((newX != endX)) {
+		while ((newX != maxX)) {
 			if(boardOperator.inBoard(newX, edgePiece.getY())){
 				board[newX][edgePiece.getY()].setColor(color);
-//				nextMove = board[newX][edgePiece.getY()];
 				newX += xPerMove;
 				}
 		}
 	}
-	private void flipDiagonally(int color, GamePiece nextMove, int piecesGained, GamePiece edgePiece){
+
+	private void flipDiagonally(int color, GamePiece nextMove,
+			int piecesGained, GamePiece edgePiece) {
 		int totalX = Math.abs(nextMove.getX() - edgePiece.getX());
 		int xPerMove = totalX / (piecesGained + 1);
 		int minX = Math.min(nextMove.getX(), edgePiece.getX());
@@ -147,6 +153,7 @@ public class GameBoard {
 			}
 		}
 	}
+	
 	public int computePiecesGained(GamePiece nextMove, GamePiece anEdgePiece){
 		int distance = 0;
 		// can be a distance of only x, y didn't change
@@ -162,10 +169,9 @@ public class GameBoard {
 			//vertical and horizontal distances must be the same in a square grid
 			distance = Math.abs(anEdgePiece.getLocation().y - nextMove.getY());
 		}
-		// pieces captured are 1 less than distance
-				return distance - 1;
-			
+		return distance - 1; 	// pieces captured are 1 less than distance
 	}
+	
 	public int computePiecesGained(GamePiece piece) {
 		//uses list of endPieces of received in piece
 		int distance = 0;

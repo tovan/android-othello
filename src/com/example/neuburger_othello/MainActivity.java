@@ -1,6 +1,7 @@
-package neuburger_othello;
+package com.example.neuburger_othello;
 
-import com.example.neuburger_othello.R;
+
+
 
 import neuburger.othello.GameBoard;
 import android.annotation.SuppressLint;
@@ -10,13 +11,12 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnDragListener;
-import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
+
+import com.example.neuburger_othello.R;
 
 public class MainActivity extends Activity implements OnTouchListener  {
 

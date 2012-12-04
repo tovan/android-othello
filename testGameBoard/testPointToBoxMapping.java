@@ -1,9 +1,9 @@
-package neuburger.othello;
+
+import com.example.neuburger_othello.TranslatePointToBox;
 
 import junit.framework.TestCase;
 import android.graphics.Point;
 
-import com.example.neuburger_othello.TranslatePointToBox;
 
 public class testPointToBoxMapping extends TestCase {
 
