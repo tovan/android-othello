@@ -15,18 +15,15 @@ public class BoardView extends View {
 	private int widthofBox;
 	private int heightofBox;
 	private GameBoard gameBoard;
-
-	public BoardView(Context context){
-		super(context);
-	}
+	
 	public BoardView(Context context, AttributeSet attrs){
 		super(context);
 	}
-	public BoardView(Context context, GameBoard gb) {
+	public BoardView(Context context) {
 		super(context);
 		this.setBackgroundColor(Color.WHITE);
 		this.paint = new Paint();
-		this.gameBoard = gb;
+		this.gameBoard = new GameBoard();
 		gameBoard.setUpBoard();
 
 	}
@@ -39,7 +36,7 @@ public class BoardView extends View {
 		
 		// draw the background
 		paint.setColor(Color.rgb(0,80,0));
-		canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
+		canvas.drawRect(0, 0, getWidth(), getWidth(), paint);
 		//draw the lines
 		paint.setColor(Color.BLACK);
 		for (int row = 0; row < 9; row++) {
@@ -66,5 +63,9 @@ public class BoardView extends View {
 
 		}
 
+	}
+
+	public GameBoard getGameBoard(){
+		return this.gameBoard;
 	}
 }

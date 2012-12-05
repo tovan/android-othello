@@ -28,18 +28,10 @@ public class MainActivity extends Activity implements OnTouchListener  {
         setContentView(R.layout.activity_main);
 
         finishButton = (Button) this.findViewById(R.id.finishButton);
-        Display display = getWindowManager().getDefaultDisplay();
-    	Point size = new Point();
-    	Point smallSize = new Point();
-    	Point largeSize = new Point();
-    	display.getCurrentSizeRange(smallSize, largeSize);
-    	display.getSize(size);
+        this.boardView = (BoardView)this.findViewById(R.id.boardView);
+        this.gameBoard = boardView.getGameBoard();
         
-    	gameBoard = new GameBoard();
-        boardView = new BoardView(this, gameBoard);
-        
-        setContentView(boardView);
-        boardView.setOnTouchListener(this);
+    	boardView.setOnTouchListener(this);
         translatePointToBox = new TranslatePointToBox();
     }
 
@@ -61,7 +53,5 @@ public class MainActivity extends Activity implements OnTouchListener  {
 		drawView.invalidate();
 		return false;
 	}
-	public GameBoard getGameBoard(){
-		return this.gameBoard;
-	}
+	
 }
