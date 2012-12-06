@@ -38,7 +38,7 @@ public class GameBoard {
 				captureLocation(color, x, y);
 				GamePiece nextMove = board[x][y];
 				flipPieces(color, nextMove, nextMove.getEdgePieces());
-				makeComputerMove();
+			
 				madeMove = true;
 			}
 		}return madeMove;
@@ -193,6 +193,19 @@ public class GameBoard {
 		}
 		// pieces captured are 1 less than distance
 		return distance - 1;
+	}
+	public int numPiecesOfColor(int color) {
+		int numPieces = 0;
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[i].length; j++) {
+				if(this.getPieceAt(i, j).isOccupied()){
+					if (color == this.getPieceAt(i, j).getColor()) {
+						numPieces++;
+					}
+				}
+			}
+		}
+		return numPieces;
 	}
 	public GamePiece getPieceAt(int i, int j) {
 		return this.board[i][j];

@@ -16,11 +16,8 @@ public class BoardView extends View {
 	private int heightofBox;
 	private GameBoard gameBoard;
 	
-	public BoardView(Context context, AttributeSet attrs){
-		super(context);
-	}
-	public BoardView(Context context) {
-		super(context);
+	public BoardView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 		this.setBackgroundColor(Color.WHITE);
 		this.paint = new Paint();
 		this.gameBoard = new GameBoard();
@@ -33,6 +30,8 @@ public class BoardView extends View {
 	public void onDraw(final Canvas canvas) {
 		this.widthofBox = this.getWidth() / 8;
 		this.heightofBox = this.widthofBox;
+		
+		this.paint = new Paint();//why not called from constructor?
 		
 		// draw the background
 		paint.setColor(Color.rgb(0,80,0));
