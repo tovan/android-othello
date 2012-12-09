@@ -92,4 +92,7 @@ public class GamePiece {
 	public void addEdgePiece(GamePiece edgePiece) {
 		edgePieces.add(edgePiece);
 	}
+	public void clearEdgePieces() {
+		edgePieces =  new ArrayList<GamePiece>();
+	}
 }

@@ -43,6 +43,7 @@ public class BoardOperator {
 		}
 		//if piece is empty, check if surrounded by piece of other color
 		else {
+			board[row][col].clearEdgePieces();//clear old caches
 			ArrayList<GamePiece> surroundingPieces = getSurroundingPieces(board[row][col]);
 			for (GamePiece piece : surroundingPieces){
 				GamePiece edgePiece = findExistingEdgePieces(color, piece);
@@ -59,20 +60,40 @@ public class BoardOperator {
 		int otherColor = getOtherColor();
 		//method recursively calls itself to find blank spot at other end
 		GamePiece edgePiece = null;
+		GamePiece nextPiece = null;
 		int nextX = surroundingPiece.getX()+surroundingPiece.getDirection().x;
 		int nextY = surroundingPiece.getY()+surroundingPiece.getDirection().y;
 		//check if in board (otherwise checking its color will throw an error)
+	
+		
 		if (inBoard(nextX, nextY)) {
-			GamePiece nextPiece = board[nextX][nextY];
+			nextPiece = board[nextX][nextY];
+			while(nextPiece.getColor() != null && nextPiece.getColor() == otherColor){
+				setDirection(surroundingPiece, nextPiece);
+				nextX = nextPiece.getX()+nextPiece.getDirection().x;
+				nextY = nextPiece.getY()+nextPiece.getDirection().y;
+				surroundingPiece = nextPiece;	//reset surrounding piece to recent piece just compared with
+				if (inBoard(nextX, nextY)) {
+					nextPiece = board[nextX][nextY];
+				}
+				else{
+					break;
+				}
+			}
+		}
+			if (inBoard(nextX, nextY) && nextPiece.getColor() != null && nextPiece.getColor() == playersColor){
+				edgePiece = board[nextX][nextY];
+			}
+			/*
 			if (nextPiece.getColor() != null && nextPiece.getColor() == playersColor) {
 				// we hit a piece on other end of blank spot that is player's
 				// color, so blank spot is a valid move
 				edgePiece = nextPiece;
-			} else if (nextPiece.getColor() != null && nextPiece.getColor() == otherColor) {
+				} else if (nextPiece.getColor() != null && nextPiece.getColor() == otherColor) {
 				setDirection(surroundingPiece, nextPiece);
 				return findExistingEdgePieces(playersColor, nextPiece);
 			}
-		}
+		}*/
 		return edgePiece;
 	}
 	protected int potentialPiecesGained(GamePiece gamePiece, int myColor){

@@ -1,13 +1,13 @@
 package neuburger.othello;
 
-import java.util.zip.Inflater;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -23,15 +23,24 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	private Button finishButton;
 	private TextView counter;
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    Menu optionsMenu = (Menu) this.findViewById(R.id.menu);
+	    inflater.inflate(R.id.menu, menu);
+	    return true;
+	}
+	
     @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Menu optionsMenu = (Menu) this.findViewById(R.id.menu);
         finishButton = (Button) this.findViewById(R.id.finishButton);
-        this.boardView = (BoardView)this.findViewById(R.id.boardView);
-        this.gameBoard = boardView.getGameBoard();
+        boardView = (BoardView)this.findViewById(R.id.boardView);
+        gameBoard = boardView.getGameBoard();
         
     	boardView.setOnTouchListener(this);
         translatePointToBox = new TranslatePointToBox();
