@@ -23,6 +23,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	private Button finishButton;
 	private TextView counter;
 	
+	/*
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -30,14 +31,14 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	    inflater.inflate(R.id.menu, menu);
 	    return true;
 	}
-	
+	*/
     @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Menu optionsMenu = (Menu) this.findViewById(R.id.menu);
+//      Menu optionsMenu = (Menu) this.findViewById(R.id.menu);
         finishButton = (Button) this.findViewById(R.id.finishButton);
         boardView = (BoardView)this.findViewById(R.id.boardView);
         gameBoard = boardView.getGameBoard();

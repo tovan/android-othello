@@ -10,10 +10,13 @@ public class GameBoard {
 	private GamePiece[][] board;
 	private BoardOperator boardOperator;
 	private Stack<GamePiece> piecesMoved;
+	private GamePiece lastMove;
+	private ArrayList<GamePiece>piecesFlipped;
 	
 	public GameBoard() {
 		board = new GamePiece[9][9];
 		boardOperator = new BoardOperator(board);
+		piecesFlipped = new ArrayList<GamePiece>();
 	}
 
 	public GamePiece[][] getBoard() {
@@ -35,10 +38,11 @@ public class GameBoard {
 				System.out.println("sorry but that is an invalid move!");
 				madeMove = false;
 			} else {
+				piecesFlipped = new ArrayList<GamePiece>();
 				captureLocation(color, x, y);
 				GamePiece nextMove = board[x][y];
 				flipPieces(color, nextMove, nextMove.getEdgePieces());
-			
+				lastMove = nextMove;
 				madeMove = true;
 			}
 		}return madeMove;
@@ -65,6 +69,8 @@ public class GameBoard {
 		} 
 		else {
 			GamePiece nextMove = getStrategicPiece(potentialMoves);
+			lastMove = nextMove;
+			piecesFlipped = new ArrayList<GamePiece>();
 			captureLocation(Color.BLACK, nextMove.getX(),nextMove.getY());
 			System.out.println("black moved on: "+potentialMoves.get(potentialMoves.size()-1).getX()+ ","+potentialMoves.get(potentialMoves.size()-1).getY());
 			int piecesGained = computePiecesGained(nextMove);
@@ -73,6 +79,10 @@ public class GameBoard {
 		}
 	}
 	
+	public GamePiece getLastMove() {
+		return lastMove;
+	}
+
 	public GamePiece getStrategicPiece(ArrayList<GamePiece> potentialMoves) {
 		for (GamePiece piece : potentialMoves) {
 			if (piece.getX() == 1 && piece.getY() == 1 || piece.getX() == 1 && piece.getY() == 8) {
@@ -111,6 +121,7 @@ public class GameBoard {
 		while ((newY != maxY)) {
 			if(boardOperator.inBoard(edgePiece.getX(), newY)){
 				board[edgePiece.getX()][newY].setColor(color);
+				piecesFlipped.add(board[edgePiece.getX()][newY]);
 				newY += yPerMove;
 			}
 		}
@@ -126,6 +137,7 @@ public class GameBoard {
 		while ((newX != maxX)) {
 			if(boardOperator.inBoard(newX, edgePiece.getY())){
 				board[newX][edgePiece.getY()].setColor(color);
+				piecesFlipped.add(board[newX][edgePiece.getY()]);
 				newX += xPerMove;
 				}
 		}
@@ -144,6 +156,7 @@ public class GameBoard {
 		while ((newX != endX && newY != endY)) {
 			if(boardOperator.inBoard(newX, edgePiece.getY())){
 				board[newX][newY].setColor(color);
+				piecesFlipped.add(board[newX][newY]);
 				nextMove = board[newX][newY];
 				newX += xPerMove;
 				newY += xPerMove;
@@ -154,6 +167,10 @@ public class GameBoard {
 		}
 	}
 	
+	public ArrayList<GamePiece> getPiecesFlipped() {
+		return piecesFlipped;
+	}
+
 	public int computePiecesGained(GamePiece nextMove, GamePiece anEdgePiece){
 		int distance = 0;
 		// can be a distance of only x, y didn't change
