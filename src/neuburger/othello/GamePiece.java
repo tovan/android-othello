@@ -14,6 +14,7 @@ public class GamePiece {
 
 	private ArrayList<GamePiece> potentialMoves;
 	private ArrayList<GamePiece> edgePieces;
+	private ArrayList<GamePiece> surroundingPieces;
 	private Point location;
 
 	public GamePiece() {
@@ -94,5 +95,11 @@ public class GamePiece {
 	}
 	public void clearEdgePieces() {
 		edgePieces =  new ArrayList<GamePiece>();
+	}
+	public void setSurroundingPieces(ArrayList<GamePiece>surList){
+		surroundingPieces = surList;
+	}
+	public ArrayList<GamePiece> getSurroundingPieces(){
+		return surroundingPieces;
 	}
 }

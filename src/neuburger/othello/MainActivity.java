@@ -51,7 +51,12 @@ public class MainActivity extends Activity implements OnTouchListener  {
 
     public void onButtonClick(View view){
     	Log.d("Othello main", "button clicked");
-    	gameBoard.makeComputerMove();
+    	makeComputerMove();
+    	
+    }
+
+	public void makeComputerMove() {
+		gameBoard.makeComputerMove();
     	boardView.invalidate();
     	int blackTotal = this.gameBoard.numPiecesOfColor(Color.BLACK);
     	int whiteTotal = this.gameBoard.numPiecesOfColor(Color.WHITE);
@@ -67,8 +72,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
     	}
     	counter.setText("white count: "+ whiteTotal +"\nblack count: "+ blackTotal+"\nlead color: "+winingColor);
     	counter.showContextMenu();
-    	
-    }
+	}
 	@Override
 	public boolean onTouch(View boardView, MotionEvent pointPressed) {
 		float xLocation = pointPressed.getX();
@@ -79,8 +83,12 @@ public class MainActivity extends Activity implements OnTouchListener  {
 		box =  translatePointToBox.translate(xLocation, yLocation, boxWidth, boxHeight);
 		Log.d("onTouch", xLocation +" "+yLocation);
 		Log.d("onTouch", box.y+1 +", "+(box.x+1));
-		gameBoard.makeMove(Color.WHITE, box.y+1, box.x+1);
+		boolean madeMove = gameBoard.makeMove(Color.WHITE, box.y+1, box.x+1);
 		boardView.invalidate();
+		if(madeMove){
+			makeComputerMove();
+			boardView.invalidate();
+		}
 		return false;
 	}
 	

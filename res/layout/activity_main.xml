@@ -30,17 +30,5 @@
         android:layout_marginRight="33dp"
         android:ems="10" />
 
-   <menu
-       android:id="@+id/menu"
-       xmlns:android="http://schemas.android.com/apk/res/android"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content" >
-
-    <item android:id="@+id/new_game"
-          android:title="New Game"
-          android:showAsAction="ifRoom"/>
-    <item android:id="@+id/onePlayer"
-          android:title="1 player" />
-</menu> 
-    
+   
 </RelativeLayout>

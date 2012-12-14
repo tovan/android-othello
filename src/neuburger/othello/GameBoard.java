@@ -46,6 +46,7 @@ public class GameBoard {
 				madeMove = true;
 			}
 		}return madeMove;
+		//will be false if user touched an invalid spot
 	}
 
 	private void captureLocation(int color, int x, int y) {
@@ -69,10 +70,10 @@ public class GameBoard {
 		} 
 		else {
 			GamePiece nextMove = getStrategicPiece(potentialMoves);
+			System.out.println("black moved on: "+nextMove.getX()+", "+ nextMove.getY());
 			lastMove = nextMove;
 			piecesFlipped = new ArrayList<GamePiece>();
 			captureLocation(Color.BLACK, nextMove.getX(),nextMove.getY());
-			System.out.println("black moved on: "+potentialMoves.get(potentialMoves.size()-1).getX()+ ","+potentialMoves.get(potentialMoves.size()-1).getY());
 			int piecesGained = computePiecesGained(nextMove);
 			this.flipPieces(Color.BLACK, nextMove, nextMove.getEdgePieces());
 			System.out.println("you have just captured " + piecesGained + " piece(s)!");
@@ -98,6 +99,7 @@ public class GameBoard {
 		// nextMove --> move just taken
 		// has list of edgePieces at other end of pieces to be turned over
 		for(GamePiece edgePiece: edgePieces){
+			System.out.println((color == Color.BLACK? "black": "white") +" has E.P. of: "+edgePiece.getX()+", "+edgePiece.getY());
 			int piecesGained = computePiecesGained(nextMove, edgePiece);
 			if (nextMove.getX() == edgePiece.getX()) {
 				flipHorizontally(color, nextMove, piecesGained, edgePiece);
@@ -105,7 +107,7 @@ public class GameBoard {
 			else if (nextMove.getY() == edgePiece.getY()) {
 				flipVertically(color, nextMove, piecesGained, edgePiece);
 			}
-			else{ //uses xPerMove
+			else{
 				flipDiagonally(color, nextMove, piecesGained, edgePiece);
 			}
 		}
@@ -143,30 +145,29 @@ public class GameBoard {
 		}
 	}
 
-	private void flipDiagonally(int color, GamePiece nextMove,
-			int piecesGained, GamePiece edgePiece) {
-		int totalX = Math.abs(nextMove.getX() - edgePiece.getX());
+	private void flipDiagonally(int color, GamePiece nextMove, int piecesGained, GamePiece edgePiece) {
+		int totalX = edgePiece.getX() - nextMove.getX();
 		int xPerMove = totalX / (piecesGained + 1);
-		int minX = Math.min(nextMove.getX(), edgePiece.getX());
-		int endX = Math.max(nextMove.getX(), edgePiece.getX());
-		int minY = Math.min(nextMove.getY(), edgePiece.getY());
-		int endY = Math.max(nextMove.getY(), edgePiece.getY());
-		int newX = minX + xPerMove;
-		int newY = minY + xPerMove;
-		while ((newX != endX && newY != endY)) {
-			if(boardOperator.inBoard(newX, edgePiece.getY())){
+		int totalY = edgePiece.getY() - nextMove.getY();
+		int yPerMove = totalY / (piecesGained + 1);
+		int newX, newY;
+
+		do {
+			newY = nextMove.getY() + yPerMove;
+			newX = nextMove.getX() + xPerMove;
+
+			if (boardOperator.inBoard(newX, newY)) {
 				board[newX][newY].setColor(color);
 				piecesFlipped.add(board[newX][newY]);
 				nextMove = board[newX][newY];
-				newX += xPerMove;
-				newY += xPerMove;
-				}
-			else{
-				return; 
+			} else {
+				return;
 			}
-		}
+		} while (newX != edgePiece.getX() && newY != edgePiece.getY());
+		//since it's a do while loop the edgePiece will get added even though it wasn't actually flipped
+		piecesFlipped.remove(piecesFlipped.size() - 1);
 	}
-	
+
 	public ArrayList<GamePiece> getPiecesFlipped() {
 		return piecesFlipped;
 	}
