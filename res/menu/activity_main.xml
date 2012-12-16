@@ -1,6 +1,28 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_settings"
-        android:title="@string/menu_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
-</menu>
+<menu
+       android:id="@+id/menu"
+       xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content" >
+
+    <item android:id="@+id/new_game"
+          android:title="Options"
+          android:showAsAction="ifRoom"/>
+    <item android:id = "@+id/newGame"
+          android:title = "New Game"
+        />
+    <item android:id="@+id/onePlayer"
+          android:title="1 player" 
+          android:checkable="true"
+          android:checkableBehavior="single"
+          />
+    <item 
+	      android:id="@+id/twoPlayers"
+	      android:title="2 players" 
+	      android:checkable="true"
+	      android:checkableBehavior="single"/>
+    <item 
+        android:id="@+id/userIsBlack"
+        android:title = "I want to play black!"
+        />
+</menu> 
+
