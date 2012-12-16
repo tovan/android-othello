@@ -101,4 +101,7 @@ public class BoardView extends View {
 	public GameBoard getGameBoard() {
 		return this.gameBoard;
 	}
+	public void setGameBoard(GameBoard newBoard){
+		this.gameBoard = newBoard;
+	}
 }

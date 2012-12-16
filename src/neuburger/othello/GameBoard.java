@@ -36,7 +36,7 @@ public class GameBoard {
 		if (boardOperator.inBoard(x, y)) {
 			if (!boardOperator.isPossibleMove(color, x, y)) {
 				System.out.println("sorry but that is an invalid move!");
-				madeMove = false;
+				madeMove = true;
 			} else {
 				piecesFlipped = new ArrayList<GamePiece>();
 				captureLocation(color, x, y);
@@ -63,8 +63,8 @@ public class GameBoard {
 		return colorofDesiredSpot == Color.WHITE? Color.BLACK: Color.WHITE;
 	}
 
-	public void makeComputerMove() {
-		ArrayList<GamePiece> potentialMoves = boardOperator.getPossibleMoves(Color.BLACK);
+	public void makeComputerMove(int computerColor) {
+		ArrayList<GamePiece> potentialMoves = boardOperator.getPossibleMoves(computerColor);
 		if (potentialMoves.isEmpty()) {
 			System.out.println("no moves can be made");
 		} 
@@ -73,9 +73,9 @@ public class GameBoard {
 			System.out.println("black moved on: "+nextMove.getX()+", "+ nextMove.getY());
 			lastMove = nextMove;
 			piecesFlipped = new ArrayList<GamePiece>();
-			captureLocation(Color.BLACK, nextMove.getX(),nextMove.getY());
+			captureLocation(computerColor, nextMove.getX(),nextMove.getY());
 			int piecesGained = computePiecesGained(nextMove);
-			this.flipPieces(Color.BLACK, nextMove, nextMove.getEdgePieces());
+			this.flipPieces(computerColor, nextMove, nextMove.getEdgePieces());
 			System.out.println("you have just captured " + piecesGained + " piece(s)!");
 		}
 	}

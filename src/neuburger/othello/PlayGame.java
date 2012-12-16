@@ -49,7 +49,7 @@ public class PlayGame {
 //					}
 //					System.out.println("sorry computer moves are not enabled now");
 					if(madeMove){
-						board.makeComputerMove();
+						board.makeComputerMove(Color.BLACK);
 					}
 					break;
 				case 'p':
