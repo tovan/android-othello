@@ -8,15 +8,16 @@ import android.graphics.Color;
 public class GameBoard {
 
 	private GamePiece[][] board;
+	private CPU CPU;
 	private BoardOperator boardOperator;
 	private Stack<GamePiece> piecesMoved;
 	private GamePiece lastMove;
-	private ArrayList<GamePiece>piecesFlipped;
+	private GameBoard previousBoard;
 	
 	public GameBoard() {
 		board = new GamePiece[9][9];
 		boardOperator = new BoardOperator(board);
-		piecesFlipped = new ArrayList<GamePiece>();
+		CPU = new CPU(board, boardOperator);
 	}
 
 	public GamePiece[][] getBoard() {
@@ -36,21 +37,14 @@ public class GameBoard {
 		if (boardOperator.inBoard(x, y)) {
 			if (!boardOperator.isPossibleMove(color, x, y)) {
 				System.out.println("sorry but that is an invalid move!");
-				madeMove = true;
 			} else {
-				piecesFlipped = new ArrayList<GamePiece>();
-				captureLocation(color, x, y);
+				CPU.captureLocation(color, x, y);
 				GamePiece nextMove = board[x][y];
-				flipPieces(color, nextMove, nextMove.getEdgePieces());
+				CPU.flipPieces(color, nextMove, nextMove.getEdgePieces());
 				lastMove = nextMove;
 				madeMove = true;
 			}
 		}return madeMove;
-		//will be false if user touched an invalid spot
-	}
-
-	private void captureLocation(int color, int x, int y) {
-		board[x][y].setColor(color);
 	}
 
 	//will be used when I allow user to flip its own pieces
@@ -63,154 +57,10 @@ public class GameBoard {
 		return colorofDesiredSpot == Color.WHITE? Color.BLACK: Color.WHITE;
 	}
 
-	public void makeComputerMove(int computerColor) {
-		ArrayList<GamePiece> potentialMoves = boardOperator.getPossibleMoves(computerColor);
-		if (potentialMoves.isEmpty()) {
-			System.out.println("no moves can be made");
-		} 
-		else {
-			GamePiece nextMove = getStrategicPiece(potentialMoves);
-			System.out.println("black moved on: "+nextMove.getX()+", "+ nextMove.getY());
-			lastMove = nextMove;
-			piecesFlipped = new ArrayList<GamePiece>();
-			captureLocation(computerColor, nextMove.getX(),nextMove.getY());
-			int piecesGained = computePiecesGained(nextMove);
-			this.flipPieces(computerColor, nextMove, nextMove.getEdgePieces());
-			System.out.println("you have just captured " + piecesGained + " piece(s)!");
-		}
-	}
-	
-	public GamePiece getLastMove() {
-		return lastMove;
-	}
-
-	public GamePiece getStrategicPiece(ArrayList<GamePiece> potentialMoves) {
-		for (GamePiece piece : potentialMoves) {
-			if (piece.getX() == 1 && piece.getY() == 1 || piece.getX() == 1 && piece.getY() == 8) {
-				return piece;
-			} else if (piece.getX() == 8 && piece.getY() == 1 || piece.getX() == 8 && piece.getY() == 8) {
-				return piece;
-			}
-		}
-		return potentialMoves.get(potentialMoves.size() - 1);
-	}
-
-	public void flipPieces(int color, GamePiece nextMove, ArrayList<GamePiece> edgePieces) {
-		// nextMove --> move just taken
-		// has list of edgePieces at other end of pieces to be turned over
-		for(GamePiece edgePiece: edgePieces){
-			System.out.println((color == Color.BLACK? "black": "white") +" has E.P. of: "+edgePiece.getX()+", "+edgePiece.getY());
-			int piecesGained = computePiecesGained(nextMove, edgePiece);
-			if (nextMove.getX() == edgePiece.getX()) {
-				flipHorizontally(color, nextMove, piecesGained, edgePiece);
-			}
-			else if (nextMove.getY() == edgePiece.getY()) {
-				flipVertically(color, nextMove, piecesGained, edgePiece);
-			}
-			else{
-				flipDiagonally(color, nextMove, piecesGained, edgePiece);
-			}
-		}
-	}
-	
-	private void flipHorizontally(int color, GamePiece nextMove, int piecesGained,	GamePiece edgePiece) {
-		
-		int totalY = Math.abs(nextMove.getY() - edgePiece.getY());
-		int yPerMove = totalY / (piecesGained + 1);
-		int minY = Math.min(nextMove.getY(), edgePiece.getY());
-		int maxY = Math.max(nextMove.getY(), edgePiece.getY());
-		int newY = minY + yPerMove;
-		while ((newY != maxY)) {
-			if(boardOperator.inBoard(edgePiece.getX(), newY)){
-				board[edgePiece.getX()][newY].setColor(color);
-				piecesFlipped.add(board[edgePiece.getX()][newY]);
-				newY += yPerMove;
-			}
-		}
-	}
-
-	private void flipVertically(int color, GamePiece nextMove, int piecesGained,GamePiece edgePiece) {
-		
-		int totalX = Math.abs(nextMove.getX() - edgePiece.getX());
-		int xPerMove = totalX / (piecesGained + 1);
-		int minX = Math.min(nextMove.getX(), edgePiece.getX());
-		int maxX = Math.max(nextMove.getX(), edgePiece.getX());
-		int newX = minX + xPerMove;
-		while ((newX != maxX)) {
-			if(boardOperator.inBoard(newX, edgePiece.getY())){
-				board[newX][edgePiece.getY()].setColor(color);
-				piecesFlipped.add(board[newX][edgePiece.getY()]);
-				newX += xPerMove;
-				}
-		}
-	}
-
-	private void flipDiagonally(int color, GamePiece nextMove, int piecesGained, GamePiece edgePiece) {
-		int totalX = edgePiece.getX() - nextMove.getX();
-		int xPerMove = totalX / (piecesGained + 1);
-		int totalY = edgePiece.getY() - nextMove.getY();
-		int yPerMove = totalY / (piecesGained + 1);
-		int newX, newY;
-
-		do {
-			newY = nextMove.getY() + yPerMove;
-			newX = nextMove.getX() + xPerMove;
-
-			if (boardOperator.inBoard(newX, newY)) {
-				board[newX][newY].setColor(color);
-				piecesFlipped.add(board[newX][newY]);
-				nextMove = board[newX][newY];
-			} else {
-				return;
-			}
-		} while (newX != edgePiece.getX() && newY != edgePiece.getY());
-		//since it's a do while loop the edgePiece will get added even though it wasn't actually flipped
-		piecesFlipped.remove(piecesFlipped.size() - 1);
-	}
-
-	public ArrayList<GamePiece> getPiecesFlipped() {
-		return piecesFlipped;
-	}
-
-	public int computePiecesGained(GamePiece nextMove, GamePiece anEdgePiece){
-		int distance = 0;
-		// can be a distance of only x, y didn't change
-		if (anEdgePiece.getLocation().y == nextMove.getY()) {
-			distance = Math.abs(anEdgePiece.getLocation().x - nextMove.getX());
-		}
-		// can be a distance of only y, x didn't change
-		else if (anEdgePiece.getLocation().x == nextMove.getX()) {
-			distance = Math.abs(anEdgePiece.getLocation().y - nextMove.getY());
-		}
-		// can be diagonally apart
-		else {
-			//vertical and horizontal distances must be the same in a square grid
-			distance = Math.abs(anEdgePiece.getLocation().y - nextMove.getY());
-		}
-		return distance - 1; 	// pieces captured are 1 less than distance
-	}
-	
-	public int computePiecesGained(GamePiece piece) {
-		//uses list of endPieces of received in piece
-		int distance = 0;
-		for (int i = 0; i < piece.getEdgePieces().size(); i++) {
-			GamePiece currEdgePiece = piece.getEdgePieces().get(i);
-			// can be a distance of only x, y didn't change
-			if (currEdgePiece.getLocation().y == piece.getY()) {
-				distance += Math.abs(currEdgePiece.getLocation().x - piece.getX());//must use += to have a cumulative sum over all edgePieces
-			}
-			// can be a distance of only y, x didn't change
-			else if (currEdgePiece.getLocation().x == piece.getX()) {
-				distance += Math.abs(currEdgePiece.getLocation().y - piece.getY());
-			}
-			// can be diagonally apart
-			else {
-				//vertical and horizontal distances must be the same in a square grid
-				distance += Math.abs(currEdgePiece.getLocation().y - piece.getY());
-			}
-		}
-		// pieces captured are 1 less than distance
-		return distance - 1;
+	public GamePiece provideHint(int playersColor) {
+		ArrayList<GamePiece> possibleMoves = boardOperator.getPossibleMoves(playersColor);
+		//for now it returns the first possible move, must add AI to make it the ideal suggested move
+		return possibleMoves.get(0);
 	}
 	public int numPiecesOfColor(int color) {
 		int numPieces = 0;
@@ -225,6 +75,15 @@ public class GameBoard {
 		}
 		return numPieces;
 	}
+	public void cacheBoard(){
+		this.previousBoard = this;
+	}
+	public GameBoard getPreviousBoard(){
+		return this.previousBoard;
+	}
+	public GamePiece getLastMove() {
+		return lastMove;
+	}
 	public GamePiece getPieceAt(int i, int j) {
 		return this.board[i][j];
 	}
@@ -237,7 +96,17 @@ public class GameBoard {
 	public BoardOperator getBoardOperator() {
 		return boardOperator;
 	}
-
+	public CPU getCPU(){
+		return this.CPU;
+	}
+	public void removeMove() {
+		// TODO Auto-generated method stub
+		//really must store prev. color
+		GamePiece removedPiece = piecesMoved.pop();
+		int x = removedPiece.getXLocation();
+		int y = removedPiece.getYLocation();
+		board[x][y] = new GamePiece(x, y);
+	}
 	public String toString() {
 		StringBuffer str = new StringBuffer();
 		for (int row = 1; row < board.length; row++) {
@@ -258,14 +127,4 @@ public class GameBoard {
 		}
 		return str.toString();
 	}
-	
-	public void removeMove() {
-		// TODO Auto-generated method stub
-		//really must store prev. color
-		GamePiece removedPiece = piecesMoved.pop();
-		int x = removedPiece.getX();
-		int y = removedPiece.getY();
-		board[x][y] = new GamePiece(x, y);
-	}
-
 }

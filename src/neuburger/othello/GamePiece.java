@@ -1,10 +1,7 @@
 package neuburger.othello;
 
 import java.util.ArrayList;
-
-import android.graphics.Color;
 import android.graphics.Point;
-
 
 public class GamePiece {
 	private int xLocation;
@@ -12,33 +9,35 @@ public class GamePiece {
 	private Integer color;
 	private Point direction;
 
-	private ArrayList<GamePiece> potentialMoves;
-	private ArrayList<GamePiece> edgePieces;
+	/**
+	 * pieces in other color immediately near a piece
+	 */
 	private ArrayList<GamePiece> surroundingPieces;
-	private Point location;
-
+	/**
+	 * pieces on opposite end of surrounding Piece
+	 */
+	private ArrayList<GamePiece> edgePieces;
+	/**
+	 * pieces gained by moving on this piece, can go negative 
+	 */
+	private int piecesGained;
+	
 	public GamePiece() {
-
-	}
-	public static void main(String[] args) {
-		System.out.println(Color.BLACK);
+		piecesGained = 0;
 	}
 	public GamePiece(int x, int y, Integer color) {
 		this.xLocation = x;
 		this.yLocation = y;
-		this.location = new Point(xLocation, yLocation);
 
 		this.color = color;
-		potentialMoves = new ArrayList<GamePiece>();
 		edgePieces = new ArrayList<GamePiece>();
+		piecesGained = 0;
 	}
 	public GamePiece(int x, int y){
 		this.xLocation = x;
 		this.yLocation = y;
-		this.location = new Point(xLocation, yLocation);
-		potentialMoves = new ArrayList<GamePiece>();
 		edgePieces = new ArrayList<GamePiece>();
-
+		piecesGained = 0;
 	}
 	public Integer getColor() {
 		return color;
@@ -46,14 +45,6 @@ public class GamePiece {
 
 	public void setColor(int color) {
 		this.color = color;
-	}
-
-	public Point getLocation() {
-		return location;
-	}
-
-	public void setLocation(Point location) {
-		this.location = location;
 	}
 
 	public Point getDirection() {
@@ -68,16 +59,12 @@ public class GamePiece {
 		return getColor() == c;
 	}
 
-	public int getX() {
+	public int getXLocation() {
 		return this.xLocation;
 	}
 
-	public int getY() {
+	public int getYLocation() {
 		return this.yLocation;
-	}
-
-	public void addToPotentialMovesList(GamePiece nextPiece) {
-		potentialMoves.add(nextPiece);
 	}
 
 	public ArrayList<GamePiece> getEdgePieces() {
@@ -101,5 +88,14 @@ public class GamePiece {
 	}
 	public ArrayList<GamePiece> getSurroundingPieces(){
 		return surroundingPieces;
+	}
+	public int getPiecesGained() {
+		return piecesGained;
+	}
+	public void setPiecesGained(int piecesGained) {
+		this.piecesGained = piecesGained;
+	}
+	public void switchPiecesGained(int number){
+		this.piecesGained -= number;
 	}
 }

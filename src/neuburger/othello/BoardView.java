@@ -17,6 +17,7 @@ public class BoardView extends View {
 	private int widthofBox;
 	private int heightofBox;
 	private GameBoard gameBoard;
+	private GamePiece suggestedMove;
 
 	public BoardView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -50,6 +51,15 @@ public class BoardView extends View {
 																		// rows
 				canvas.drawLine(startY, startX, startY, endX, paint);// draws
 																		// columns
+				if (suggestedMove != null) {
+					paint.setColor(Color.LTGRAY);
+					float startXLoc = (suggestedMove.getYLocation()-1) * widthofBox;
+					float startYLoc = (suggestedMove.getXLocation()-1)* heightofBox;
+					canvas.drawRect(startXLoc, startYLoc, startXLoc + widthofBox, startYLoc + heightofBox, paint);
+					paint.setColor(Color.BLACK);
+				}
+				//reset sugggestedMove so that it is not redrawn until user requests it again
+				suggestedMove = null;
 			}
 			// draw pieces moved onto
 			for (int c = 0; c < 9; c++) {
@@ -65,29 +75,30 @@ public class BoardView extends View {
 					}
 				}
 			}
+			//draw visual cues of last move
 			GamePiece lastMove = gameBoard.getLastMove();
 			if(lastMove != null){
 				paint.setColor(Color.RED);
-				canvas.drawCircle(widthofBox * lastMove.getY() - widthofBox / 2,
-						widthofBox * lastMove.getX() - widthofBox / 2,
+				canvas.drawCircle(widthofBox * lastMove.getYLocation() - widthofBox / 2,
+						widthofBox * lastMove.getXLocation() - widthofBox / 2,
 						(widthofBox / 2), paint);
-				int color = gameBoard.getPieceAt(lastMove.getX(), lastMove.getY()).getColor();
+				int color = gameBoard.getPieceAt(lastMove.getXLocation(), lastMove.getYLocation()).getColor();
 				paint.setColor(color);
-				canvas.drawCircle(widthofBox * lastMove.getY() - widthofBox / 2,
-						widthofBox * lastMove.getX() - widthofBox / 2,
+				canvas.drawCircle(widthofBox * lastMove.getYLocation() - widthofBox / 2,
+						widthofBox * lastMove.getXLocation() - widthofBox / 2,
 						((widthofBox / 2)- 8), paint);
 			}
-			ArrayList<GamePiece>piecesFlipped = gameBoard.getPiecesFlipped();
+			ArrayList<GamePiece>piecesFlipped = gameBoard.getCPU().getPiecesFlipped();
 			for(GamePiece flip: piecesFlipped){
 				paint.setColor(Color.YELLOW);
-				canvas.drawCircle(widthofBox * flip.getY() - widthofBox / 2,
-						widthofBox * flip.getX() - widthofBox / 2,
+				canvas.drawCircle(widthofBox * flip.getYLocation() - widthofBox / 2,
+						widthofBox * flip.getXLocation() - widthofBox / 2,
 						(widthofBox / 2), paint);
 
-				int color = gameBoard.getPieceAt(flip.getX(), flip.getY()).getColor();
+				int color = gameBoard.getPieceAt(flip.getXLocation(), flip.getYLocation()).getColor();
 				paint.setColor(color);
-				canvas.drawCircle(widthofBox * flip.getY() - widthofBox / 2,
-						widthofBox * flip.getX() - widthofBox / 2,
+				canvas.drawCircle(widthofBox * flip.getYLocation() - widthofBox / 2,
+						widthofBox * flip.getXLocation() - widthofBox / 2,
 						((widthofBox / 2)- 8), paint);
 			}
 			
@@ -103,5 +114,9 @@ public class BoardView extends View {
 	}
 	public void setGameBoard(GameBoard newBoard){
 		this.gameBoard = newBoard;
+	}
+
+	public void setSuggestedMove(GamePiece suggestedMove) {
+		this.suggestedMove = suggestedMove;
 	}
 }

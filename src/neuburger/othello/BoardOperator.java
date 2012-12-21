@@ -12,7 +12,8 @@ public class BoardOperator {
 	
 	public BoardOperator(GamePiece[][] board){
 		this.board = board;
-		setInitialBoard();//each piece should know its location
+	
+	setInitialBoard();//each piece should know its location
 	}
 	public void setInitialBoard(){
 		for(int row = 0; row < board.length; row++){
@@ -65,8 +66,8 @@ public class BoardOperator {
 		GamePiece nextPiece = surroundingPiece;
 		int nextX, nextY;
 			do{
-				nextX = nextPiece.getX()+nextPiece.getDirection().x;
-				nextY = nextPiece.getY()+nextPiece.getDirection().y;
+				nextX = nextPiece.getXLocation()+nextPiece.getDirection().x;
+				nextY = nextPiece.getYLocation()+nextPiece.getDirection().y;
 				surroundingPiece = nextPiece;	//reset surrounding piece to recent piece just compared with
 				if (inBoard(nextX, nextY)) {
 					nextPiece = board[nextX][nextY];
@@ -88,15 +89,15 @@ public class BoardOperator {
 		for (GamePiece surroundingPiece : surroundingPieces){
 			
 				ArrayList<GamePiece> edgePieces = new ArrayList<GamePiece>();
-				int nextX = surroundingPiece.getX()+surroundingPiece.getDirection().x;
-				int nextY = surroundingPiece.getY()+surroundingPiece.getDirection().y;
+				int nextX = surroundingPiece.getXLocation()+surroundingPiece.getDirection().x;
+				int nextY = surroundingPiece.getYLocation()+surroundingPiece.getDirection().y;
 				
 				if(inBoard(nextX, nextY)){
 					GamePiece nextPiece = board[nextX][nextY];
 					piecesGained++;
 					while(nextPiece.getColor()!= null && nextPiece.getColor() == otherColor){
-						nextX = surroundingPiece.getX()+surroundingPiece.getDirection().x;
-						nextY = surroundingPiece.getY()+surroundingPiece.getDirection().y;
+						nextX = surroundingPiece.getXLocation()+surroundingPiece.getDirection().x;
+						nextY = surroundingPiece.getYLocation()+surroundingPiece.getDirection().y;
 						
 					if(nextPiece.getColor() == myColor){//we hit a piece on other end of blank spot that is player's color, so blank spot is a valid move
 						edgePieces.add(nextPiece);
@@ -117,8 +118,8 @@ public class BoardOperator {
 		return false;
 	}
 	private void setDirection(GamePiece currentPiece, GamePiece surroundingPiece){
-		int x = surroundingPiece.getX() - currentPiece.getX();
-		int y = surroundingPiece.getY() - currentPiece.getY();
+		int x = surroundingPiece.getXLocation() - currentPiece.getXLocation();
+		int y = surroundingPiece.getYLocation() - currentPiece.getYLocation();
 		surroundingPiece.setDirection(x, y);
 	}
 	public ArrayList<GamePiece> getSurroundingPieces(GamePiece currentPiece) {
@@ -182,8 +183,8 @@ public class BoardOperator {
 	}
 	public boolean hasConnectionNorth(GamePiece piece){
 		int otherColor = getOtherColor();
-		int newX = piece.getX()-1;
-		int newY = piece.getY();	//same y
+		int newX = piece.getXLocation()-1;
+		int newY = piece.getYLocation();	//same y
 		boolean hasConnection = false;
 		if(inBoard(newX, newY)&& board[newX][newY].getColor()!= null){
 			hasConnection = board[newX][newY].getColor() == (otherColor);
@@ -191,14 +192,14 @@ public class BoardOperator {
 		return hasConnection;
 	}
 	public GamePiece getConnectingOnNorth(GamePiece piece){
-		int newX = piece.getX()-1;
-		int newY = piece.getY();	//same y
+		int newX = piece.getXLocation()-1;
+		int newY = piece.getYLocation();	//same y
 		return board[newX][newY];
 	}
 	public boolean hasConnectionSouth(GamePiece piece){
 		int otherColor = getOtherColor();
-		int newX = piece.getX()+1;
-		int newY = piece.getY();	//same y
+		int newX = piece.getXLocation()+1;
+		int newY = piece.getYLocation();	//same y
 		boolean hasConnection = false;
 		if(inBoard(newX, newY) && board[newX][newY].getColor()!= null){
 			hasConnection = board[newX][newY].getColor() == (otherColor);
@@ -206,14 +207,14 @@ public class BoardOperator {
 		return hasConnection;
 	}
 	public GamePiece getConnectingOnSouth(GamePiece piece){
-		int newX = piece.getX()+1;
-		int newY = piece.getY();	//same y
+		int newX = piece.getXLocation()+1;
+		int newY = piece.getYLocation();	//same y
 		return board[newX][newY];
 	}
 	public boolean hasConnectionEast(GamePiece piece){
 		int otherColor = getOtherColor();
-		int newX = piece.getX();	//same x
-		int newY = piece.getY()+1;
+		int newX = piece.getXLocation();	//same x
+		int newY = piece.getYLocation()+1;
 		boolean hasConnection = false;
 		if(inBoard(newX, newY)&& board[newX][newY].getColor()!= null){
 			hasConnection = board[newX][newY].getColor() == (otherColor);
@@ -221,14 +222,14 @@ public class BoardOperator {
 		return hasConnection;
 	}
 	public GamePiece getConnectingOnEast(GamePiece piece){
-		int newX = piece.getX();	//same x
-		int newY = piece.getY()+1;
+		int newX = piece.getXLocation();	//same x
+		int newY = piece.getYLocation()+1;
 		return board[newX][newY];
 	}
 	public boolean hasConnectionWest(GamePiece piece){
 		int otherColor = getOtherColor();
-		int newX = piece.getX();	//same x
-		int newY = piece.getY()-1;
+		int newX = piece.getXLocation();	//same x
+		int newY = piece.getYLocation()-1;
 		boolean hasConnection = false;
 		if(inBoard(newX, newY)&& board[newX][newY].getColor()!= null){
 			hasConnection = board[newX][newY].getColor() == (otherColor);
@@ -236,14 +237,14 @@ public class BoardOperator {
 		return hasConnection;
 	}
 	public GamePiece getConnectingOnWest(GamePiece piece){
-		int newX = piece.getX();	//same x
-		int newY = piece.getY()-1;
+		int newX = piece.getXLocation();	//same x
+		int newY = piece.getYLocation()-1;
 		return board[newX][newY];
 	}
 	public boolean hasConnectionNE(GamePiece piece){
 		int otherColor = getOtherColor();
-		int newX = piece.getX()-1;
-		int newY = piece.getY()+1;	
+		int newX = piece.getXLocation()-1;
+		int newY = piece.getYLocation()+1;	
 		boolean hasConnection = false;
 		if(inBoard(newX, newY)&& board[newX][newY].getColor()!= null){
 			hasConnection = board[newX][newY].getColor() == (otherColor);
@@ -251,14 +252,14 @@ public class BoardOperator {
 		return hasConnection;
 	}
 	public GamePiece getConnectingOnNE(GamePiece piece){
-		int newX = piece.getX()-1;
-		int newY = piece.getY()+1;	
+		int newX = piece.getXLocation()-1;
+		int newY = piece.getYLocation()+1;	
 		return board[newX][newY];
 	}
 	public boolean hasConnectionNW(GamePiece piece){
 		int otherColor = getOtherColor();
-		int newX = piece.getX()-1;
-		int newY = piece.getY()-1;
+		int newX = piece.getXLocation()-1;
+		int newY = piece.getYLocation()-1;
 		boolean hasConnection = false;
 		if(inBoard(newX, newY)&& board[newX][newY].getColor()!= null){
 			hasConnection = board[newX][newY].getColor() == (otherColor);
@@ -266,14 +267,14 @@ public class BoardOperator {
 		return hasConnection;
 	}
 	public GamePiece getConnectingOnNW(GamePiece piece){
-		int newX = piece.getX()-1;
-		int newY = piece.getY()-1;
+		int newX = piece.getXLocation()-1;
+		int newY = piece.getYLocation()-1;
 		return board[newX][newY];
 	}
 	public boolean hasConnectionSE(GamePiece piece){
 		int otherColor = getOtherColor();
-		int newX = piece.getX()+1;
-		int newY = piece.getY()+1;
+		int newX = piece.getXLocation()+1;
+		int newY = piece.getYLocation()+1;
 		boolean hasConnection = false;
 		if(inBoard(newX, newY)&& board[newX][newY].getColor()!= null){
 			hasConnection = board[newX][newY].getColor() == (otherColor);
@@ -281,14 +282,14 @@ public class BoardOperator {
 		return hasConnection;
 	}
 	public GamePiece getConnectingOnSE(GamePiece piece){
-		int newX = piece.getX()+1;
-		int newY = piece.getY()+1;
+		int newX = piece.getXLocation()+1;
+		int newY = piece.getYLocation()+1;
 		return board[newX][newY];
 	}
 	public boolean hasConnectionSW(GamePiece piece){
 		int otherColor = getOtherColor();
-		int newX = piece.getX()+1;
-		int newY = piece.getY()-1;
+		int newX = piece.getXLocation()+1;
+		int newY = piece.getYLocation()-1;
 		boolean hasConnection = false;
 		if(inBoard(newX, newY)&& board[newX][newY].getColor()!= null){
 			hasConnection = board[newX][newY].getColor() == (otherColor);
@@ -296,8 +297,8 @@ public class BoardOperator {
 		return hasConnection;
 	}
 	public GamePiece getConnectingOnSW(GamePiece piece){
-		int newX = piece.getX()+1;
-		int newY = piece.getY()-1;
+		int newX = piece.getXLocation()+1;
+		int newY = piece.getYLocation()-1;
 		return board[newX][newY];
 	}
 

@@ -49,7 +49,7 @@ public class PlayGame {
 //					}
 //					System.out.println("sorry computer moves are not enabled now");
 					if(madeMove){
-						board.makeComputerMove(Color.BLACK);
+						board.getCPU().makeComputerMove(Color.BLACK);
 					}
 					break;
 				case 'p':
@@ -73,7 +73,7 @@ public class PlayGame {
 					System.out.println("current locations:");
 					ArrayList<GamePiece>possibleMoves = board.getBoardOperator().getPossibleMoves(Color.WHITE);
 					for(GamePiece p: possibleMoves){
-						System.out.println(p.getX()+", "+p.getY());
+						System.out.println(p.getXLocation()+", "+p.getYLocation());
 					}
 					break;
 				default:
