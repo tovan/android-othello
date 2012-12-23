@@ -5,18 +5,21 @@ import android.graphics.Color;
 
 public class CPU {
 	
+	private GameBoard gameBoard;
 	private GamePiece[][] board;
 	private BoardOperator boardOperator;
 	private ArrayList<GamePiece>piecesFlipped;
 	private GamePiece lastMove;
 	
-	public CPU( GamePiece[][] b, BoardOperator oper ){
+	public CPU(GameBoard gb, GamePiece[][] b, BoardOperator oper ){
 		piecesFlipped = new ArrayList<GamePiece>();
 		this.board = b;
 		this.boardOperator = oper;
+		this.gameBoard = gb;
 	}
 	
 	public void makeComputerMove(int computerColor) {
+		gameBoard.cacheBoard();	//store current state of board - to allow undo move to occur
 		ArrayList<GamePiece> potentialMoves = boardOperator.getPossibleMoves(computerColor);
 		if (potentialMoves.isEmpty()) {
 			System.out.println("no moves can be made");
@@ -24,12 +27,10 @@ public class CPU {
 		else {
 			GamePiece nextMove = getStrategicPieceHard(potentialMoves, computerColor);
 			System.out.println("black moved on: "+nextMove.getXLocation()+", "+ nextMove.getYLocation());
-			lastMove = nextMove;
+			this.gameBoard.setLastMove(nextMove);
 			piecesFlipped = new ArrayList<GamePiece>();
 			captureLocation(computerColor, nextMove.getXLocation(),nextMove.getYLocation());
-			int piecesGained = computePiecesGained(nextMove);
 			this.flipPieces(computerColor, nextMove, nextMove.getEdgePieces());
-			System.out.println("you have just captured " + piecesGained + " piece(s)!");
 		}
 	}
 
@@ -59,6 +60,7 @@ public class CPU {
 				 piece.setPiecesGained(potentialPiecesGained);
 				 ArrayList<GamePiece>potentialPlayerMoves = boardOperator.getPossibleMoves(playersColor);
 				 resetPiecesGained(potentialPlayerMoves, piece);
+				 bestPiece = getPieceWithMaxGain(potentialMoves);
 			 }
 		}
 		return bestPiece;
@@ -71,13 +73,13 @@ public class CPU {
 		}
 	}
 	public GamePiece getPieceWithMaxGain(ArrayList<GamePiece> potentialMoves){
-		int maxPiecesGained = 0;
-		GamePiece pieceWithMaxGain = null;
-		for(GamePiece piece: potentialMoves){
-			int potentialPiecesGained = computePiecesGained(piece);
+		int maxPiecesGained = computePiecesGained(potentialMoves.get(0));	//set max to gain of first piece
+		GamePiece pieceWithMaxGain =  potentialMoves.get(0);;
+		for(int ctr = 1; ctr < potentialMoves.size(); ctr++){
+			int potentialPiecesGained = computePiecesGained(potentialMoves.get(ctr));
 			if(potentialPiecesGained > maxPiecesGained){
 				maxPiecesGained =  potentialPiecesGained;
-				pieceWithMaxGain = piece;
+				pieceWithMaxGain = potentialMoves.get(ctr);
 			}
 		}
 		return pieceWithMaxGain;

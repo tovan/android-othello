@@ -75,38 +75,42 @@ public class BoardView extends View {
 					}
 				}
 			}
-			//draw visual cues of last move
-			GamePiece lastMove = gameBoard.getLastMove();
-			if(lastMove != null){
-				paint.setColor(Color.RED);
-				canvas.drawCircle(widthofBox * lastMove.getYLocation() - widthofBox / 2,
-						widthofBox * lastMove.getXLocation() - widthofBox / 2,
-						(widthofBox / 2), paint);
-				int color = gameBoard.getPieceAt(lastMove.getXLocation(), lastMove.getYLocation()).getColor();
-				paint.setColor(color);
-				canvas.drawCircle(widthofBox * lastMove.getYLocation() - widthofBox / 2,
-						widthofBox * lastMove.getXLocation() - widthofBox / 2,
-						((widthofBox / 2)- 8), paint);
+			if (gameBoard.getNumPlayers() ==1){
+				drawComputerMoveCues(canvas);
 			}
-			ArrayList<GamePiece>piecesFlipped = gameBoard.getCPU().getPiecesFlipped();
-			for(GamePiece flip: piecesFlipped){
-				paint.setColor(Color.YELLOW);
-				canvas.drawCircle(widthofBox * flip.getYLocation() - widthofBox / 2,
-						widthofBox * flip.getXLocation() - widthofBox / 2,
-						(widthofBox / 2), paint);
-
-				int color = gameBoard.getPieceAt(flip.getXLocation(), flip.getYLocation()).getColor();
-				paint.setColor(color);
-				canvas.drawCircle(widthofBox * flip.getYLocation() - widthofBox / 2,
-						widthofBox * flip.getXLocation() - widthofBox / 2,
-						((widthofBox / 2)- 8), paint);
-			}
-			
-			
 			//reset paint to draw next board lines black
 			paint.setColor(Color.BLACK);
 		}
 
+	}
+
+	public void drawComputerMoveCues(final Canvas canvas) {
+		//draw visual cues of last move
+		GamePiece lastMove = gameBoard.getLastMove();
+		if(lastMove != null){
+			paint.setColor(Color.RED);
+			canvas.drawCircle(widthofBox * lastMove.getYLocation() - widthofBox / 2,
+					widthofBox * lastMove.getXLocation() - widthofBox / 2,
+					(widthofBox / 2), paint);
+			int color = gameBoard.getPieceAt(lastMove.getXLocation(), lastMove.getYLocation()).getColor();
+			paint.setColor(color);
+			canvas.drawCircle(widthofBox * lastMove.getYLocation() - widthofBox / 2,
+					widthofBox * lastMove.getXLocation() - widthofBox / 2,
+					((widthofBox / 2)- 8), paint);
+		}
+		ArrayList<GamePiece>piecesFlipped = gameBoard.getCPU().getPiecesFlipped();
+		for(GamePiece flip: piecesFlipped){
+			paint.setColor(Color.YELLOW);
+			canvas.drawCircle(widthofBox * flip.getYLocation() - widthofBox / 2,
+					widthofBox * flip.getXLocation() - widthofBox / 2,
+					(widthofBox / 2), paint);
+
+			int color = gameBoard.getPieceAt(flip.getXLocation(), flip.getYLocation()).getColor();
+			paint.setColor(color);
+			canvas.drawCircle(widthofBox * flip.getYLocation() - widthofBox / 2,
+					widthofBox * flip.getXLocation() - widthofBox / 2,
+					((widthofBox / 2)- 8), paint);
+		}
 	}
 
 	public GameBoard getGameBoard() {

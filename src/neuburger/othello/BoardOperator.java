@@ -23,6 +23,7 @@ public class BoardOperator {
 			}
 		}
 	}
+
 	public ArrayList<GamePiece> getPossibleMoves(int color){
 		setMyColor(color);
 		ArrayList<GamePiece> possibleMoves = new ArrayList<GamePiece>();
@@ -44,7 +45,7 @@ public class BoardOperator {
 		}
 		//if piece is empty, check if surrounded by piece of other color
 		else {
-			board[row][col].clearEdgePieces();//clear old caches
+//			board[row][col].clearEdgePieces();//clear old caches
 			ArrayList<GamePiece> surroundingPieces = getSurroundingPieces(board[row][col]);
 			board[row][col].setSurroundingPieces(surroundingPieces);
 			

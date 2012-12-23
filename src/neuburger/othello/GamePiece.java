@@ -22,6 +22,8 @@ public class GamePiece {
 	 */
 	private int piecesGained;
 	
+	private int longTermGain;
+	
 	public GamePiece() {
 		piecesGained = 0;
 	}
@@ -94,8 +96,12 @@ public class GamePiece {
 	}
 	public void setPiecesGained(int piecesGained) {
 		this.piecesGained = piecesGained;
+		this.longTermGain = piecesGained;
 	}
 	public void switchPiecesGained(int number){
-		this.piecesGained -= number;
+		this.longTermGain -= number;
+	}
+	public String toString(){
+		return "Color: " + this.color + "Location: " + this.xLocation + ", " + this.yLocation;
 	}
 }

@@ -13,11 +13,14 @@ public class GameBoard {
 	private Stack<GamePiece> piecesMoved;
 	private GamePiece lastMove;
 	private GameBoard previousBoard;
+	private int numPlayers;
 	
 	public GameBoard() {
 		board = new GamePiece[9][9];
 		boardOperator = new BoardOperator(board);
-		CPU = new CPU(board, boardOperator);
+		CPU = new CPU(this, board, boardOperator);
+		
+		numPlayers = 1;
 	}
 
 	public GamePiece[][] getBoard() {
@@ -33,6 +36,7 @@ public class GameBoard {
 	}
 
 	public boolean makeMove(int color, int x, int y) {
+		cacheBoard();	//store current state to allow undo move
 		boolean madeMove = false;
 		if (boardOperator.inBoard(x, y)) {
 			if (!boardOperator.isPossibleMove(color, x, y)) {
@@ -41,7 +45,7 @@ public class GameBoard {
 				CPU.captureLocation(color, x, y);
 				GamePiece nextMove = board[x][y];
 				CPU.flipPieces(color, nextMove, nextMove.getEdgePieces());
-				lastMove = nextMove;
+				setLastMove(nextMove);
 				madeMove = true;
 			}
 		}return madeMove;
@@ -79,8 +83,13 @@ public class GameBoard {
 		this.previousBoard = this;
 	}
 	public GameBoard getPreviousBoard(){
-		return this.previousBoard;
+		return previousBoard;
 	}
+	
+	public void setLastMove(GamePiece lastMove) {
+		this.lastMove = lastMove;
+	}
+
 	public GamePiece getLastMove() {
 		return lastMove;
 	}
@@ -99,6 +108,15 @@ public class GameBoard {
 	public CPU getCPU(){
 		return this.CPU;
 	}
+
+	public int getNumPlayers() {
+		return numPlayers;
+	}
+
+	public void setNumPlayers(int numPlayers) {
+		this.numPlayers = numPlayers;
+	}
+
 	public void removeMove() {
 		// TODO Auto-generated method stub
 		//really must store prev. color

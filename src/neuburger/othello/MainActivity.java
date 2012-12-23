@@ -2,6 +2,8 @@ package neuburger.othello;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,11 +29,12 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	private Button hintForWhiteButton;
 	private Button hintForBlackButton;
 	private TextView counter;
-	private int numPlayers;
 	private int playersColor;
 	private int computerColor;
 	private int currColor;
 	private Menu optionsMenu;
+	private CheckBox twoPCheckBox ;
+	private CheckBox onePCheckBox; 
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -48,21 +52,53 @@ public class MainActivity extends Activity implements OnTouchListener  {
 			break;
 		
 		case R.id.onePlayer:
-			numPlayers = 1;
-			item.setCheckable(true);
-			item.setChecked(true);
+			if (gameBoard.numPiecesOfColor(Color.BLACK)>2 || gameBoard.numPiecesOfColor(Color.WHITE) >2){
+				stopPlayer();
+			}
+			else{
+				gameBoard.setNumPlayers(1);
+				item.setCheckable(true);
+				item.setChecked(true);
+			}
 			break;
 		case R.id.twoPlayers:
-			numPlayers = 2;
-			currColor = Color.BLACK;
-			item.setCheckable(true);
-			item.setChecked(true);
+			if (gameBoard.numPiecesOfColor(Color.BLACK)>2 || gameBoard.numPiecesOfColor(Color.WHITE) >2){
+				stopPlayer();
+			}
+			else{
+				gameBoard.setNumPlayers(2);
+				currColor = Color.BLACK;
+				item.setCheckable(true);
+				item.setChecked(true);
+			}
 			break;
 		case R.id.userIsBlack:
 			playersColor = Color.BLACK;
 			computerColor = Color.WHITE;
 		}
 		return true;
+	}
+	public void stopPlayer(){
+		AlertDialog.Builder popUpAlert  = new AlertDialog.Builder(this);
+
+		popUpAlert.setMessage("Switching the number of players in middle of a game will restart your game. " +
+				"\nAre you sure you would like to continue?");
+		popUpAlert.setTitle("Reset Number of Players");
+		popUpAlert.setPositiveButton("Ok",
+			    new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int btnClicked) {
+			        	onCreate(null);
+			        }
+			    });
+		popUpAlert.setNegativeButton("Cancel", 
+				new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface dialog, int btnClicked) {
+						//do nothing on cancel click						
+					}
+		});
+		popUpAlert.setCancelable(true);
+		popUpAlert.create().show();
 	}
     @SuppressLint("NewApi")
 	@Override
@@ -82,11 +118,14 @@ public class MainActivity extends Activity implements OnTouchListener  {
         
         counter = (TextView)this.findViewById(R.id.counter);
         //by default one player should play against computer, this can be changed through menu 
-        numPlayers = 1;
+        gameBoard.setNumPlayers(1);
         //by default user is white and computer is black, this can be changed through menu
         playersColor = Color.WHITE;
         computerColor = Color.BLACK;
         currColor = playersColor == Color.BLACK? Color.BLACK: Color.WHITE;	//if 2 players are playing, first move is white
+    
+    	onePCheckBox = (CheckBox)findViewById(R.id.onePlayer);
+    	twoPCheckBox = (CheckBox)findViewById(R.id.twoPlayers);
     }
 
     public void onFinishButtonClick(View view){
@@ -111,7 +150,6 @@ public class MainActivity extends Activity implements OnTouchListener  {
     }
     public void onUndoButtonClick(View view){
     	GameBoard previousBoard = this.gameBoard.getPreviousBoard();
-    	Log.d("onUndoButtonClick", ""+previousBoard.numPiecesOfColor(Color.WHITE));
     	boardView.setGameBoard(previousBoard);
     	boardView.invalidate();
     }
@@ -144,14 +182,13 @@ public class MainActivity extends Activity implements OnTouchListener  {
 		box =  translatePointToBox.translate(xLocation, yLocation, boxWidth, boxHeight);
 		Log.d("onTouch", xLocation +" "+yLocation);
 		Log.d("onTouch", box.y+1 +", "+(box.x+1));
-		//before move is actually made, cache recent board to facilitate undo move
-		gameBoard.cacheBoard();
-		if(numPlayers == 2){
+
+		if(gameBoard.getNumPlayers() == 2){
 			madeMove = gameBoard.makeMove(currColor, box.y+1, box.x+1);
 		}
 		madeMove = gameBoard.makeMove(playersColor, box.y+1, box.x+1);
 		boardView.invalidate();
-		if(madeMove && numPlayers == 1 ){
+		if(madeMove && gameBoard.getNumPlayers() == 1 ){
 			makeComputerMove(computerColor);
 			boardView.invalidate();
 		}
