@@ -94,6 +94,9 @@ public class GamePiece {
 	public int getPiecesGained() {
 		return piecesGained;
 	}
+	public int getLongTermGain() {
+		return longTermGain;
+	}
 	public void setPiecesGained(int piecesGained) {
 		this.piecesGained = piecesGained;
 		this.longTermGain = piecesGained;

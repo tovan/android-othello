@@ -34,7 +34,6 @@ public class ComputerPlayer {
 		}
 	}
 	public void makeComputerMove(int computerColor) {
-		gameBoard.cacheBoard();	//store current state of board - to allow undo move to occur
 		ArrayList<GamePiece> potentialMoves = boardOperator.getPossibleMoves(computerColor);
 		if (potentialMoves.isEmpty()) {
 			System.out.println("no moves can be made");
@@ -46,13 +45,13 @@ public class ComputerPlayer {
 			piecesFlipped = new ArrayList<GamePiece>();
 			captureLocation(computerColor, nextMove.getXLocation(),nextMove.getYLocation());
 			this.flipPieces(computerColor, nextMove, nextMove.getEdgePieces());
+			gameBoard.cacheBoard();
 		}
 	}
 
 	protected void captureLocation(int color, int x, int y) {
 		board[x][y].setColor(color);
 	}
-	
 	
 	protected void resetPiecesGained(ArrayList<GamePiece> potentialMoves, GamePiece originalPiece){
 		

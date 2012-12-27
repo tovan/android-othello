@@ -10,16 +10,18 @@ public class GameBoard {
 	private GamePiece[][] board;
 	private ComputerPlayer computerPlayer;
 	private BoardController boardOperator;
-	private Stack<GamePiece> piecesMoved;
+	private Stack<GameBoard> previousBoards;
+	
+
 	private GamePiece lastMove;
-	private GameBoard previousBoard;
 	private int numPlayers;
 
 	public GameBoard() {
 		board = new GamePiece[9][9];
 		boardOperator = new BoardController(board);
 		computerPlayer = new ComputerPlayer(this, board, boardOperator);
-
+		previousBoards = new Stack<GameBoard>();
+		
 		numPlayers = 1;
 	}
 
@@ -36,7 +38,6 @@ public class GameBoard {
 	}
 
 	public boolean makeMove(int color, int x, int y) {
-		cacheBoard(); // store current state to allow undo move
 		boolean madeMove = false;
 		if (boardOperator.inBoard(x, y)) {
 			if (!boardOperator.isPossibleMove(color, x, y)) {
@@ -47,6 +48,7 @@ public class GameBoard {
 				computerPlayer.flipPieces(color, nextMove, nextMove.getEdgePieces());
 				setLastMove(nextMove);
 				madeMove = true;
+				cacheBoard();
 			}
 		}
 		return madeMove;
@@ -86,13 +88,6 @@ public class GameBoard {
 	public void setStrategy(ComputerPlayer.StrategyEnum s){
 		this.computerPlayer.setStrategy(s);
 	}
-	public void cacheBoard() {
-		this.previousBoard = this;
-	}
-
-	public GameBoard getPreviousBoard() {
-		return previousBoard;
-	}
 
 	public void setLastMove(GamePiece lastMove) {
 		this.lastMove = lastMove;
@@ -129,14 +124,13 @@ public class GameBoard {
 	public void setNumPlayers(int numPlayers) {
 		this.numPlayers = numPlayers;
 	}
-
-	public void removeMove() {
-		// TODO Auto-generated method stub
-		// really must store prev. color
-		GamePiece removedPiece = piecesMoved.pop();
-		int x = removedPiece.getXLocation();
-		int y = removedPiece.getYLocation();
-		board[x][y] = new GamePiece(x, y);
+	
+	public GameBoard getPreviosBoard() {
+		GameBoard lastBoard = previousBoards.pop();
+		return lastBoard;
+	}
+	public void cacheBoard(){
+		this.previousBoards.push(this);
 	}
 
 	public String toString() {

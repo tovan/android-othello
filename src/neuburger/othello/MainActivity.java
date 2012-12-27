@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +32,8 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	private int computerColor;
 	private int currColor;
 	private Menu optionsMenu;
-	private CheckBox twoPCheckBox ;
-	private CheckBox onePCheckBox; 
+	private Boolean wantsToRestart;
+	private int newNumPlayers;
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -45,11 +44,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
-		MenuItem onePlayer = (MenuItem)this.findViewById(R.id.onePlayer);
-		MenuItem twoPlayers = (MenuItem)this.findViewById(R.id.twoPlayers);
-		MenuItem easy = (MenuItem)this.findViewById(R.id.easy);
-		MenuItem medium = (MenuItem)this.findViewById(R.id.medium);
-		MenuItem hard = (MenuItem)this.findViewById(R.id.hard);
+		
 		
 		switch(item.getItemId()){
 		case R.id.newGame:
@@ -57,29 +52,37 @@ public class MainActivity extends Activity implements OnTouchListener  {
 			break;
 		
 		case R.id.onePlayer:
-			if (gameInProgress()){
-				stopPlayer();
+			if(item.isChecked()){
+				item.setChecked(false);
 			}
+			else if (gameInProgress()){
+				newNumPlayers = 1;
+				stopPlayer();
+				}
 			else{
 				gameBoard.setNumPlayers(1);
 				item.setCheckable(true);
 				item.setChecked(true);
-				twoPlayers.setChecked(false);	//one and two players must be exclusive to each other
 			}
+			
 			break;
+			
 		case R.id.twoPlayers:
-			if (gameInProgress()){
+			if(item.isChecked()){
+				item.setChecked(false);
+			}
+			else if (gameInProgress()){
+				newNumPlayers = 2;
 				stopPlayer();
 			}
 			else{
 				gameBoard.setNumPlayers(2);
 				currColor = Color.BLACK;
 				item.setCheckable(true);
-				item.setChecked(true);
-				onePlayer.setChecked(false);
+				item.setChecked(true);	
 			}
-			
 			break;
+			
 		case R.id.userIsBlack:
 			if (gameInProgress()){
 				stopPlayer();
@@ -92,20 +95,20 @@ public class MainActivity extends Activity implements OnTouchListener  {
 		
 		case R.id.easy:
 			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.easy);
-			medium.setChecked(false);
-			hard.setChecked(false);
+//			medium.setChecked(false);
+//			hard.setChecked(false);
 			break;
 	
 		case R.id.medium:
 			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.medium);
-			easy.setChecked(false);
-			hard.setChecked(false);
+//			easy.setChecked(false);
+//			hard.setChecked(false);
 			break;
 			
 		case R.id.hard:
 			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.hard);
-			easy.setChecked(false);
-			medium.setChecked(false);
+//			easy.setChecked(false);
+//			medium.setChecked(false);
 			break;
 		}
 		return true;
@@ -123,6 +126,9 @@ public class MainActivity extends Activity implements OnTouchListener  {
 			    new DialogInterface.OnClickListener() {
 			        public void onClick(DialogInterface dialog, int btnClicked) {
 			        	onCreate(null);
+			        	gameBoard.setNumPlayers(newNumPlayers);
+						currColor = Color.BLACK;
+						
 			        }
 			    });
 		popUpAlert.setNegativeButton("Cancel", 
@@ -135,16 +141,25 @@ public class MainActivity extends Activity implements OnTouchListener  {
 		popUpAlert.setCancelable(true);
 		popUpAlert.create().show();
 	}
+	
+	
     @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        
         finishButton = (Button) this.findViewById(R.id.finishButton);
         hintForWhiteButton = (Button) this.findViewById(R.id.hintForWhiteButton);
         hintForBlackButton = (Button) this.findViewById(R.id.hintForBlackButton);
         boardView = (BoardView)this.findViewById(R.id.boardView);
+//        onePlayer = (MenuItem)this.findViewById(R.id.onePlayer);
+//		twoPlayers = (MenuItem)this.findViewById(R.id.twoPlayers);
+//		easy = (MenuItem)this.findViewById(R.id.easy);
+//		medium = (MenuItem)this.findViewById(R.id.medium);
+//		hard = (MenuItem)this.findViewById(R.id.hard);
+			
+        
         gameBoard = boardView.getGameBoard();
         CPU = gameBoard.getCPU();
         
@@ -159,8 +174,6 @@ public class MainActivity extends Activity implements OnTouchListener  {
         computerColor = Color.BLACK;
         currColor = playersColor == Color.BLACK? Color.BLACK: Color.WHITE;	//if 2 players are playing, first move is white
     
-    	onePCheckBox = (CheckBox)findViewById(R.id.onePlayer);
-    	twoPCheckBox = (CheckBox)findViewById(R.id.twoPlayers);
     }
 
     public void onFinishButtonClick(View view){
@@ -188,7 +201,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
     	
     }
     public void onUndoButtonClick(View view){
-    	GameBoard previousBoard = this.gameBoard.getPreviousBoard();
+    	GameBoard previousBoard = gameBoard.getPreviosBoard();
     	boardView.setGameBoard(previousBoard);
     	boardView.invalidate();
     }
