@@ -3,21 +3,36 @@ package neuburger.othello;
 import java.util.ArrayList;
 import android.graphics.Color;
 
-public class CPU {
+public class ComputerPlayer {
 	
 	private GameBoard gameBoard;
 	private GamePiece[][] board;
-	private BoardOperator boardOperator;
+	private BoardController boardOperator;
 	private ArrayList<GamePiece>piecesFlipped;
 	private GamePiece lastMove;
+	private Strategy strategy;
+	public enum StrategyEnum {easy, medium, hard};
 	
-	public CPU(GameBoard gb, GamePiece[][] b, BoardOperator oper ){
+	public ComputerPlayer(GameBoard gb, GamePiece[][] b, BoardController oper){
 		piecesFlipped = new ArrayList<GamePiece>();
 		this.board = b;
 		this.boardOperator = oper;
 		this.gameBoard = gb;
+		this.strategy = new HardStrategy(this);
 	}
-	
+	public void setStrategy(StrategyEnum s){
+		switch(s){
+		case easy:
+			strategy = new EasyStrategy(this);
+			break;
+		case medium:
+			strategy = new MediumStrategy(this);
+			break;
+		case hard:
+			strategy = new HardStrategy(this);
+			break;
+		}
+	}
 	public void makeComputerMove(int computerColor) {
 		gameBoard.cacheBoard();	//store current state of board - to allow undo move to occur
 		ArrayList<GamePiece> potentialMoves = boardOperator.getPossibleMoves(computerColor);
@@ -25,7 +40,7 @@ public class CPU {
 			System.out.println("no moves can be made");
 		} 
 		else {
-			GamePiece nextMove = getStrategicPieceHard(potentialMoves, computerColor);
+			GamePiece nextMove = strategy.getNextMove(potentialMoves, computerColor);
 			System.out.println("black moved on: "+nextMove.getXLocation()+", "+ nextMove.getYLocation());
 			this.gameBoard.setLastMove(nextMove);
 			piecesFlipped = new ArrayList<GamePiece>();
@@ -38,41 +53,15 @@ public class CPU {
 		board[x][y].setColor(color);
 	}
 	
-	public GamePiece getStrategicPieceEasy(ArrayList<GamePiece> potentialMoves) {
-		//only 'knows' to get corner pieces
-		for (GamePiece piece : potentialMoves) {
-			 if( isCorner(piece) )
-			 {
-				 return piece;
-			 }
-		}
-		return potentialMoves.get(potentialMoves.size() - 1);
-	}
-	public GamePiece getStrategicPieceHard(ArrayList<GamePiece> potentialMoves, int computerColor) {
-		int playersColor = this.getOppositeColor(computerColor);
-		GamePiece bestPiece = null;
-		for (GamePiece piece : potentialMoves) {
-			 if( isCorner(piece) ){
-				 bestPiece = piece;
-			 }
-			 else{
-				 int potentialPiecesGained = computePiecesGained(piece);
-				 piece.setPiecesGained(potentialPiecesGained);
-				 ArrayList<GamePiece>potentialPlayerMoves = boardOperator.getPossibleMoves(playersColor);
-				 resetPiecesGained(potentialPlayerMoves, piece);
-				 bestPiece = getPieceWithMaxGain(potentialMoves);
-			 }
-		}
-		return bestPiece;
-	}
-	public void resetPiecesGained(ArrayList<GamePiece> potentialMoves, GamePiece originalPiece){
+	
+	protected void resetPiecesGained(ArrayList<GamePiece> potentialMoves, GamePiece originalPiece){
 		
 		for(GamePiece piece: potentialMoves){
 			 int potentialPiecesGained = computePiecesGained(piece);
 			 originalPiece.switchPiecesGained(potentialPiecesGained);
 		}
 	}
-	public GamePiece getPieceWithMaxGain(ArrayList<GamePiece> potentialMoves){
+	protected GamePiece getPieceWithMaxGain(ArrayList<GamePiece> potentialMoves){
 		int maxPiecesGained = computePiecesGained(potentialMoves.get(0));	//set max to gain of first piece
 		GamePiece pieceWithMaxGain =  potentialMoves.get(0);;
 		for(int ctr = 1; ctr < potentialMoves.size(); ctr++){
@@ -178,7 +167,7 @@ public class CPU {
 	}
 	
 	
-	public boolean isCorner(GamePiece piece){
+	protected boolean isCorner(GamePiece piece){
 		if(piece.getXLocation() == 1 && piece.getYLocation() == 1 || piece.getXLocation() == 8 && piece.getYLocation() == 8){
 			return true;
 		}
@@ -194,11 +183,16 @@ public class CPU {
 		}
 		return false;
 	}
-	private int getOppositeColor(Integer colorofDesiredSpot) {
+	protected int getOppositeColor(Integer colorofDesiredSpot) {
 		return colorofDesiredSpot == Color.WHITE? Color.BLACK: Color.WHITE;
 	}
 
 	public GamePiece getLastMove() {
 		return lastMove;
 	}
+
+	public BoardController getBoardOperator() {
+		return boardOperator;
+	}
+	
 }

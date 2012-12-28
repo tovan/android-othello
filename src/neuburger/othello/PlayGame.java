@@ -16,7 +16,7 @@ public class PlayGame {
 			GameBoard board = new GameBoard();
 			board.setUpBoard();
 //			FindMoves findMoves = new FindMoves(board);
-			BoardOperator boardOperator = board.getBoardOperator();
+			BoardController boardOperator = board.getBoardOperator();
 			String answer;
 /*
 			board.makeMove(Color.BLACK, 4,4);

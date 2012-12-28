@@ -24,7 +24,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	private BoardView boardView;
 	private TranslatePointToBox translatePointToBox;
 	private GameBoard gameBoard;
-	private CPU CPU;
+	private ComputerPlayer CPU;
 	private Button finishButton;
 	private Button hintForWhiteButton;
 	private Button hintForBlackButton;
@@ -45,6 +45,11 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
+		MenuItem onePlayer = (MenuItem)this.findViewById(R.id.onePlayer);
+		MenuItem twoPlayers = (MenuItem)this.findViewById(R.id.twoPlayers);
+		MenuItem easy = (MenuItem)this.findViewById(R.id.easy);
+		MenuItem medium = (MenuItem)this.findViewById(R.id.medium);
+		MenuItem hard = (MenuItem)this.findViewById(R.id.hard);
 		
 		switch(item.getItemId()){
 		case R.id.newGame:
@@ -52,17 +57,18 @@ public class MainActivity extends Activity implements OnTouchListener  {
 			break;
 		
 		case R.id.onePlayer:
-			if (gameBoard.numPiecesOfColor(Color.BLACK)>2 || gameBoard.numPiecesOfColor(Color.WHITE) >2){
+			if (gameInProgress()){
 				stopPlayer();
 			}
 			else{
 				gameBoard.setNumPlayers(1);
 				item.setCheckable(true);
 				item.setChecked(true);
+				twoPlayers.setChecked(false);	//one and two players must be exclusive to each other
 			}
 			break;
 		case R.id.twoPlayers:
-			if (gameBoard.numPiecesOfColor(Color.BLACK)>2 || gameBoard.numPiecesOfColor(Color.WHITE) >2){
+			if (gameInProgress()){
 				stopPlayer();
 			}
 			else{
@@ -70,13 +76,42 @@ public class MainActivity extends Activity implements OnTouchListener  {
 				currColor = Color.BLACK;
 				item.setCheckable(true);
 				item.setChecked(true);
+				onePlayer.setChecked(false);
 			}
+			
 			break;
 		case R.id.userIsBlack:
-			playersColor = Color.BLACK;
-			computerColor = Color.WHITE;
+			if (gameInProgress()){
+				stopPlayer();
+			}
+			else{
+				playersColor = Color.BLACK;
+				computerColor = Color.WHITE;
+			}
+			break;
+		
+		case R.id.easy:
+			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.easy);
+			medium.setChecked(false);
+			hard.setChecked(false);
+			break;
+	
+		case R.id.medium:
+			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.medium);
+			easy.setChecked(false);
+			hard.setChecked(false);
+			break;
+			
+		case R.id.hard:
+			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.hard);
+			easy.setChecked(false);
+			medium.setChecked(false);
+			break;
 		}
 		return true;
+	}
+	public boolean gameInProgress() {
+		return gameBoard.numPiecesOfColor(Color.BLACK)>2 || gameBoard.numPiecesOfColor(Color.WHITE) >2;
 	}
 	public void stopPlayer(){
 		AlertDialog.Builder popUpAlert  = new AlertDialog.Builder(this);
@@ -142,9 +177,13 @@ public class MainActivity extends Activity implements OnTouchListener  {
     public void provideHint(int color){
     	Log.d("onHintClick", "trying to give a hint");
     	GamePiece suggestedMove = gameBoard.provideHint(color);
-    	boardView.setSuggestedMove(suggestedMove);
-    	Toast toast = Toast.makeText(getBaseContext(), ""+suggestedMove.getXLocation()+", "+suggestedMove.getYLocation(), Toast.LENGTH_LONG);;
-    	toast.show();
+    	//only if a move can be made should the toast be visible
+    	if(suggestedMove != null){
+	    	boardView.setSuggestedMove(suggestedMove);
+	    	Toast toast = Toast.makeText(getBaseContext(), ""+suggestedMove.getXLocation()+", "+
+	    									suggestedMove.getYLocation(), Toast.LENGTH_LONG);
+	    	toast.show();
+    	}
     	boardView.invalidate();
     	
     }

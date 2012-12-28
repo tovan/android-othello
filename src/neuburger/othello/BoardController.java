@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import android.graphics.Color;
 
 
-public class BoardOperator {
+public class BoardController {
 
 	private GamePiece[][] board;
 	private Integer myColor;
 	
-	public BoardOperator(GamePiece[][] board){
+	public BoardController(GamePiece[][] board){
 		this.board = board;
 	
 	setInitialBoard();//each piece should know its location
