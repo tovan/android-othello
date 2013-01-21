@@ -10,7 +10,7 @@ public class GameBoard {
 	private GamePiece[][] board;
 	private ComputerPlayer computerPlayer;
 	private BoardController boardOperator;
-	private Stack<GameBoard> previousBoards;
+	private Stack<GamePiece[][]> previousBoards;
 	
 
 	private GamePiece lastMove;
@@ -20,11 +20,10 @@ public class GameBoard {
 		board = new GamePiece[9][9];
 		boardOperator = new BoardController(board);
 		computerPlayer = new ComputerPlayer(this, board, boardOperator);
-		previousBoards = new Stack<GameBoard>();
+		previousBoards = new Stack<GamePiece[][]>();
 		
 		numPlayers = 1;
 	}
-
 	public GamePiece[][] getBoard() {
 		return board;
 	}
@@ -125,14 +124,17 @@ public class GameBoard {
 		this.numPlayers = numPlayers;
 	}
 	
-	public GameBoard getPreviosBoard() {
-		GameBoard lastBoard = previousBoards.pop();
-		return lastBoard;
+	public GamePiece[][] getPreviosBoard() {
+		previousBoards.pop();
+		return previousBoards.pop();
 	}
 	public void cacheBoard(){
-		this.previousBoards.push(this);
+		previousBoards.push(board);
 	}
 
+	public void setBoard(GamePiece[][] board) {
+		this.board = board;
+	}
 	public String toString() {
 		StringBuffer str = new StringBuffer();
 		for (int row = 1; row < board.length; row++) {

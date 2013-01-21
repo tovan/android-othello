@@ -95,20 +95,14 @@ public class MainActivity extends Activity implements OnTouchListener  {
 		
 		case R.id.easy:
 			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.easy);
-//			medium.setChecked(false);
-//			hard.setChecked(false);
 			break;
 	
 		case R.id.medium:
 			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.medium);
-//			easy.setChecked(false);
-//			hard.setChecked(false);
 			break;
 			
 		case R.id.hard:
 			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.hard);
-//			easy.setChecked(false);
-//			medium.setChecked(false);
 			break;
 		}
 		return true;
@@ -153,12 +147,6 @@ public class MainActivity extends Activity implements OnTouchListener  {
         hintForWhiteButton = (Button) this.findViewById(R.id.hintForWhiteButton);
         hintForBlackButton = (Button) this.findViewById(R.id.hintForBlackButton);
         boardView = (BoardView)this.findViewById(R.id.boardView);
-//        onePlayer = (MenuItem)this.findViewById(R.id.onePlayer);
-//		twoPlayers = (MenuItem)this.findViewById(R.id.twoPlayers);
-//		easy = (MenuItem)this.findViewById(R.id.easy);
-//		medium = (MenuItem)this.findViewById(R.id.medium);
-//		hard = (MenuItem)this.findViewById(R.id.hard);
-			
         
         gameBoard = boardView.getGameBoard();
         CPU = gameBoard.getCPU();
@@ -201,8 +189,9 @@ public class MainActivity extends Activity implements OnTouchListener  {
     	
     }
     public void onUndoButtonClick(View view){
-    	GameBoard previousBoard = gameBoard.getPreviosBoard();
-    	boardView.setGameBoard(previousBoard);
+    	GamePiece[][]oldBoard = gameBoard.getPreviosBoard(); //oldBoard has pieces on it
+    	this.gameBoard.setBoard(oldBoard);
+    	boardView.setGameBoard(gameBoard);
     	boardView.invalidate();
     }
 	public void makeComputerMove(int computerColor) {

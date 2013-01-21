@@ -105,6 +105,6 @@ public class GamePiece {
 		this.longTermGain -= number;
 	}
 	public String toString(){
-		return "Color: " + this.color + "Location: " + this.xLocation + ", " + this.yLocation;
+		return "Color: " + this.color + " Location: " + this.xLocation + ", " + this.yLocation;
 	}
 }
