@@ -21,8 +21,10 @@ public class EasyStrategy implements Strategy{
 			 }
 			 else{
 				 //return a random move from the list of potential moves
-				 Random generator = new Random(potentialMoves.size());
-				 bestPiece = potentialMoves.get(generator.nextInt());
+				 if (potentialMoves.size() > 0){
+					 Random generator = new Random(potentialMoves.size());
+					 bestPiece = potentialMoves.get(generator.nextInt());
+				 }
 			 }
 		}
 		return bestPiece;

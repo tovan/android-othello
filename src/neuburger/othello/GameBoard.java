@@ -1,7 +1,6 @@
 package neuburger.othello;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 import android.graphics.Color;
 
@@ -9,8 +8,7 @@ public class GameBoard {
 
 	private GamePiece[][] board;
 	private ComputerPlayer computerPlayer;
-	private BoardController boardOperator;
-	private Stack<GamePiece[][]> previousBoards;
+	private BoardController boardController;
 	
 
 	private GamePiece lastMove;
@@ -18,9 +16,8 @@ public class GameBoard {
 
 	public GameBoard() {
 		board = new GamePiece[9][9];
-		boardOperator = new BoardController(board);
-		computerPlayer = new ComputerPlayer(this, board, boardOperator);
-		previousBoards = new Stack<GamePiece[][]>();
+		boardController = new BoardController(board);
+		computerPlayer = new ComputerPlayer(this, board, boardController);
 		
 		numPlayers = 1;
 	}
@@ -38,16 +35,16 @@ public class GameBoard {
 
 	public boolean makeMove(int color, int x, int y) {
 		boolean madeMove = false;
-		if (boardOperator.inBoard(x, y)) {
-			if (!boardOperator.isPossibleMove(color, x, y)) {
+		if (boardController.inBoard(x, y)) {
+			if (!boardController.isPossibleMove(color, x, y)) {
 				System.out.println("sorry but that is an invalid move!");
 			} else {
+				boardController.cacheBoard();
 				computerPlayer.captureLocation(color, x, y);
 				GamePiece nextMove = board[x][y];
 				computerPlayer.flipPieces(color, nextMove, nextMove.getEdgePieces());
 				setLastMove(nextMove);
 				madeMove = true;
-				cacheBoard();
 			}
 		}
 		return madeMove;
@@ -64,7 +61,7 @@ public class GameBoard {
 	}
 
 	public GamePiece provideHint(int playersColor) {
-		ArrayList<GamePiece> possibleMoves = boardOperator
+		ArrayList<GamePiece> possibleMoves = boardController
 				.getPossibleMoves(playersColor);
 		// for now it returns the first possible move, must add AI to make it
 		// the ideal suggested move
@@ -108,8 +105,8 @@ public class GameBoard {
 		this.board[i][j].setColor(color);
 	}
 
-	public BoardController getBoardOperator() {
-		return boardOperator;
+	public BoardController getBoardController() {
+		return boardController;
 	}
 
 	public ComputerPlayer getCPU() {
@@ -124,14 +121,6 @@ public class GameBoard {
 		this.numPlayers = numPlayers;
 	}
 	
-	public GamePiece[][] getPreviosBoard() {
-		previousBoards.pop();
-		return previousBoards.pop();
-	}
-	public void cacheBoard(){
-		previousBoards.push(board);
-	}
-
 	public void setBoard(GamePiece[][] board) {
 		this.board = board;
 	}

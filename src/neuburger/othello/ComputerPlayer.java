@@ -7,7 +7,7 @@ public class ComputerPlayer {
 	
 	private GameBoard gameBoard;
 	private GamePiece[][] board;
-	private BoardController boardOperator;
+	private BoardController boardController;
 	private ArrayList<GamePiece>piecesFlipped;
 	private GamePiece lastMove;
 	private Strategy strategy;
@@ -16,7 +16,7 @@ public class ComputerPlayer {
 	public ComputerPlayer(GameBoard gb, GamePiece[][] b, BoardController oper){
 		piecesFlipped = new ArrayList<GamePiece>();
 		this.board = b;
-		this.boardOperator = oper;
+		this.boardController = oper;
 		this.gameBoard = gb;
 		this.strategy = new HardStrategy(this);
 	}
@@ -33,20 +33,24 @@ public class ComputerPlayer {
 			break;
 		}
 	}
-	public void makeComputerMove(int computerColor) {
-		ArrayList<GamePiece> potentialMoves = boardOperator.getPossibleMoves(computerColor);
+	public boolean makeComputerMove(int computerColor) {
+		ArrayList<GamePiece> potentialMoves = boardController.getPossibleMoves(computerColor);
 		if (potentialMoves.isEmpty()) {
 			System.out.println("no moves can be made");
 		} 
 		else {
 			GamePiece nextMove = strategy.getNextMove(potentialMoves, computerColor);
-			System.out.println("black moved on: "+nextMove.getXLocation()+", "+ nextMove.getYLocation());
 			this.gameBoard.setLastMove(nextMove);
 			piecesFlipped = new ArrayList<GamePiece>();
-			captureLocation(computerColor, nextMove.getXLocation(),nextMove.getYLocation());
-			this.flipPieces(computerColor, nextMove, nextMove.getEdgePieces());
-			gameBoard.cacheBoard();
+			
+			if (nextMove != null){	//check that there is a possible move 
+				boardController.cacheBoard();
+				captureLocation(computerColor, nextMove.getXLocation(),nextMove.getYLocation());
+				this.flipPieces(computerColor, nextMove, nextMove.getEdgePieces());
+				return true;
+			}
 		}
+		return false;
 	}
 
 	protected void captureLocation(int color, int x, int y) {
@@ -96,7 +100,7 @@ public class ComputerPlayer {
 		int maxY = Math.max(nextMove.getYLocation(), edgePiece.getYLocation());
 		int newY = minY + yPerMove;
 		while ((newY != maxY)) {
-			if(boardOperator.inBoard(edgePiece.getXLocation(), newY)){
+			if(boardController.inBoard(edgePiece.getXLocation(), newY)){
 				board[edgePiece.getXLocation()][newY].setColor(color);
 				piecesFlipped.add(board[edgePiece.getXLocation()][newY]);
 				newY += yPerMove;
@@ -113,7 +117,7 @@ public class ComputerPlayer {
 		int maxX = Math.max(nextMove.getXLocation(), edgePiece.getXLocation());
 		int newX = minX + xPerMove;
 		while ((newX != maxX)) {
-			if(boardOperator.inBoard(newX, edgePiece.getYLocation())){
+			if(boardController.inBoard(newX, edgePiece.getYLocation())){
 				board[newX][edgePiece.getYLocation()].setColor(color);
 				piecesFlipped.add(board[newX][edgePiece.getYLocation()]);
 				newX += xPerMove;
@@ -133,7 +137,7 @@ public class ComputerPlayer {
 			newY = nextMove.getYLocation() + yPerMove;
 			newX = nextMove.getXLocation() + xPerMove;
 
-			if (boardOperator.inBoard(newX, newY)) {
+			if (boardController.inBoard(newX, newY)) {
 				board[newX][newY].setColor(color);
 				piecesFlipped.add(board[newX][newY]);
 				nextMove = board[newX][newY];
@@ -190,8 +194,8 @@ public class ComputerPlayer {
 		return lastMove;
 	}
 
-	public BoardController getBoardOperator() {
-		return boardOperator;
+	public BoardController getBoardController() {
+		return boardController;
 	}
 	
 }

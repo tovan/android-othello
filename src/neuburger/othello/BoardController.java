@@ -1,6 +1,7 @@
 package neuburger.othello;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import android.graphics.Color;
 
@@ -9,10 +10,12 @@ public class BoardController {
 
 	private GamePiece[][] board;
 	private Integer myColor;
+	private Stack<GamePiece[][]> previousBoards;
 	
 	public BoardController(GamePiece[][] board){
 		this.board = board;
-	
+		previousBoards = new Stack<GamePiece[][]>();
+		
 	setInitialBoard();//each piece should know its location
 	}
 	public void setInitialBoard(){
@@ -31,7 +34,6 @@ public class BoardController {
 			for(int col = 1; col<board.length; col++ ){
 				if(isPossibleMove(color, row,col)){
 					possibleMoves.add(board[row][col]);
-//					System.out.println("just added "+row+", "+col+" as a potential move");
 				}
 			}
 		}
@@ -45,7 +47,6 @@ public class BoardController {
 		}
 		//if piece is empty, check if surrounded by piece of other color
 		else {
-//			board[row][col].clearEdgePieces();//clear old caches
 			ArrayList<GamePiece> surroundingPieces = getSurroundingPieces(board[row][col]);
 			board[row][col].setSurroundingPieces(surroundingPieces);
 			
@@ -110,6 +111,14 @@ public class BoardController {
 		}
 		return piecesGained;
 	}
+	
+	public GamePiece[][] getPreviosBoard() {
+		return previousBoards.pop();
+	}
+	public void cacheBoard(){
+		previousBoards.push(board);
+	}
+	
 	protected boolean inBoard(int x, int y){
 		if(x >= 0 && y >= 0){
 			if(x <= 8 && y <= 8){

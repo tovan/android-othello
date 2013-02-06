@@ -16,7 +16,7 @@ public class PlayGame {
 			GameBoard board = new GameBoard();
 			board.setUpBoard();
 //			FindMoves findMoves = new FindMoves(board);
-			BoardController boardOperator = board.getBoardOperator();
+			BoardController boardOperator = board.getBoardController();
 			String answer;
 /*
 			board.makeMove(Color.BLACK, 4,4);
@@ -71,7 +71,7 @@ public class PlayGame {
 //
 //					board.makeMove(Color.BLACK, 3,3);
 					System.out.println("current locations:");
-					ArrayList<GamePiece>possibleMoves = board.getBoardOperator().getPossibleMoves(Color.WHITE);
+					ArrayList<GamePiece>possibleMoves = board.getBoardController().getPossibleMoves(Color.WHITE);
 					for(GamePiece p: possibleMoves){
 						System.out.println(p.getXLocation()+", "+p.getYLocation());
 					}

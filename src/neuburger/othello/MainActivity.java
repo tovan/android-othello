@@ -32,7 +32,6 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	private int computerColor;
 	private int currColor;
 	private Menu optionsMenu;
-	private Boolean wantsToRestart;
 	private int newNumPlayers;
 	
 	@Override
@@ -44,7 +43,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
-		
+		Toast toast;
 		
 		switch(item.getItemId()){
 		case R.id.newGame:
@@ -64,7 +63,6 @@ public class MainActivity extends Activity implements OnTouchListener  {
 				item.setCheckable(true);
 				item.setChecked(true);
 			}
-			
 			break;
 			
 		case R.id.twoPlayers:
@@ -85,6 +83,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 			
 		case R.id.userIsBlack:
 			if (gameInProgress()){
+				newNumPlayers = 1;
 				stopPlayer();
 			}
 			else{
@@ -94,15 +93,27 @@ public class MainActivity extends Activity implements OnTouchListener  {
 			break;
 		
 		case R.id.easy:
+			toast = Toast.makeText(getBaseContext(), "Easy Mode",  Toast.LENGTH_LONG);
+			toast.show();
 			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.easy);
+			item.setCheckable(true);
+			item.setChecked(true);	
 			break;
 	
 		case R.id.medium:
+			toast = Toast.makeText(getBaseContext(),"Medium Mode", Toast.LENGTH_LONG);
+			toast.show();
 			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.medium);
+			item.setCheckable(true);
+			item.setChecked(true);	
 			break;
 			
 		case R.id.hard:
+			toast = Toast.makeText(getBaseContext(),"Hard Mode", Toast.LENGTH_LONG);
+			toast.show();
 			gameBoard.setStrategy(ComputerPlayer.StrategyEnum.hard);
+			item.setCheckable(true);
+			item.setChecked(true);	
 			break;
 		}
 		return true;
@@ -114,7 +125,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 		AlertDialog.Builder popUpAlert  = new AlertDialog.Builder(this);
 
 		popUpAlert.setMessage("Switching the number of players in middle of a game will restart your game. " +
-				"\nAre you sure you would like to continue?");
+				"\nAre you sure you would like to continue? Press cancel to continue the game as is");
 		popUpAlert.setTitle("Reset Number of Players");
 		popUpAlert.setPositiveButton("Ok",
 			    new DialogInterface.OnClickListener() {
@@ -129,7 +140,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 				new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int btnClicked) {
-						//do nothing on cancel click						
+						//nothing happens
 					}
 		});
 		popUpAlert.setCancelable(true);
@@ -189,29 +200,41 @@ public class MainActivity extends Activity implements OnTouchListener  {
     	
     }
     public void onUndoButtonClick(View view){
-    	GamePiece[][]oldBoard = gameBoard.getPreviosBoard(); //oldBoard has pieces on it
+    	GamePiece[][]oldBoard = this.gameBoard.getBoardController().getPreviosBoard(); //oldBoard has pieces on it
     	this.gameBoard.setBoard(oldBoard);
     	boardView.setGameBoard(gameBoard);
     	boardView.invalidate();
     }
 	public void makeComputerMove(int computerColor) {
-		CPU.makeComputerMove(computerColor);
-    	boardView.invalidate();
-    	int blackTotal = this.gameBoard.numPiecesOfColor(Color.BLACK);
-    	int whiteTotal = this.gameBoard.numPiecesOfColor(Color.WHITE);
-    	String winingColor = null;
-    	if(blackTotal > whiteTotal){
-    		winingColor = "black";
-    	}
-    	else if(whiteTotal > blackTotal){
-    		winingColor = "white";
-    	}
-    	else{
-    		winingColor = "tie";
-    	}
-    	counter.setText("white count: "+ whiteTotal +"\nblack count: "+ blackTotal+"\nlead color: "+winingColor);
-    	counter.showContextMenu();
+		boolean movePossible = CPU.makeComputerMove(computerColor);
+		if (movePossible == false){
+			Toast toast = Toast.makeText(this, "No moves possible!", Toast.LENGTH_LONG);
+			toast.show();
+		}
+		else{
+	    	boardView.invalidate();
+	    	int blackTotal = this.gameBoard.numPiecesOfColor(Color.BLACK);
+	    	int whiteTotal = this.gameBoard.numPiecesOfColor(Color.WHITE);
+	    	String winingColor = null;
+	    	if(blackTotal > whiteTotal){
+	    		winingColor = "black";
+	    	}
+	    	else if(whiteTotal > blackTotal){
+	    		winingColor = "white";
+	    	}
+	    	else{
+	    		winingColor = "tie";
+	    	}
+	    	counter.setText("white count: "+ whiteTotal +"\nblack count: "+ blackTotal+"\nlead color: " +
+	    			winingColor);
+	    	counter.showContextMenu();
+		}
 	}
+	
+	public GameBoard getGameBoard() {
+		return gameBoard;
+	}
+
 	@Override
 	public boolean onTouch(View boardView, MotionEvent pointPressed) {
 		float xLocation = pointPressed.getX();

@@ -73,9 +73,6 @@ public class GamePiece {
 		return edgePieces;
 	}
 
-	public void setEdgePieces(ArrayList<GamePiece> edgePieces) {
-		this.edgePieces = edgePieces;
-	}
 	public boolean isOccupied() {
 		return color != null;
 	}
