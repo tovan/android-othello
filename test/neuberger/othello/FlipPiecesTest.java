@@ -3,7 +3,8 @@ package neuberger.othello;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
-import neuburger.othello.BoardOperator;
+import neuburger.othello.BoardController;
+import neuburger.othello.ComputerPlayer;
 import neuburger.othello.GameBoard;
 import neuburger.othello.GamePiece;
 import android.graphics.Color;
@@ -11,10 +12,11 @@ import android.graphics.Color;
 public class FlipPiecesTest extends TestCase {
 
 	private GameBoard gameBoard;
-
+	private ComputerPlayer CPU;
+	
 	public FlipPiecesTest() {
 		this.gameBoard = new GameBoard();
-
+		this.CPU = gameBoard.getCPU();
 	}
 
 	public void testFlipVertical() {
@@ -26,13 +28,13 @@ public class FlipPiecesTest extends TestCase {
 	}
 
 	public void testComputeEdgePieces() {
-		BoardOperator oper = gameBoard.getBoardOperator();
+		BoardController oper = gameBoard.getBoardController();
 		// mock some moves being made
 		gameBoard.setPieceAt(4, 3, Color.WHITE);
 		gameBoard.setPieceAt(4, 4, Color.WHITE);
 		gameBoard.setPieceAt(4, 5, Color.WHITE);
 		gameBoard.setPieceAt(4, 6, Color.BLACK);
-		gameBoard.getBoardOperator().setMyColor(Color.BLACK);
+		gameBoard.getBoardController().setMyColor(Color.BLACK);
 
 		oper.getSurroundingPieces(gameBoard.getPieceAt(4, 2));
 		GamePiece edgePiece = oper.findExistingEdgePieces(
@@ -41,7 +43,7 @@ public class FlipPiecesTest extends TestCase {
 
 		assertNotNull(edgePiece);
 		assertTrue(edgePiece.getColor() == Color.BLACK);
-		assertTrue(gameBoard.computePiecesGained(gameBoard.getPieceAt(4, 2)) == 3);
+		assertTrue(CPU.computePiecesGained(gameBoard.getPieceAt(4, 2)) == 3);
 	}
 
 
@@ -66,16 +68,11 @@ public class FlipPiecesTest extends TestCase {
 		gameBoard.getPieceAt(5,2).setColor(Color.BLACK);
 		gameBoard.getPieceAt(4,1).setColor(Color.WHITE);
 		
-		gameBoard.makeMove(5,8,Color.WHITE);
-		assertEquals(numPiecesOccupied(), 7);
-		gameBoard.getBoardOperator().setMyColor(Color.WHITE);
-		ArrayList<GamePiece>surrList = this.gameBoard.getBoardOperator().getSurroundingPieces(gameBoard.getPieceAt(5, 8));
-		ArrayList<GamePiece>edgeList = new ArrayList<GamePiece>();
-		for(GamePiece piece : surrList){
-			edgeList.add(this.gameBoard.getBoardOperator().findExistingEdgePieces(Color.WHITE, piece));
-		}
-		assertEquals(edgeList.size(), 2);
-		System.out.println(edgeList.size());
+		gameBoard.makeMove(Color.WHITE, 5, 8);
+		assertEquals(numPiecesOccupied(), 8);
+		
+		ArrayList<GamePiece>edgeList = gameBoard.getPieceAt(5, 8).getEdgePieces();
+		assertEquals(edgeList.size(), 1);
 	}
 	public void mockStrangeFlipping(){
 		gameBoard.getPieceAt(4,1).setColor(Color.WHITE);
@@ -112,33 +109,5 @@ public class FlipPiecesTest extends TestCase {
 		boolean moveSuccessful = gameBoard.makeMove(Color.WHITE, 7,7);
 		assertEquals(moveSuccessful, true);
 	}
-	public void testNotPreciseFlipping(){
-		gameBoard.getPieceAt(4,4).setColor(Color.WHITE);
-		gameBoard.getPieceAt(4,5).setColor(Color.WHITE);
-		
-		gameBoard.getPieceAt(5,1).setColor(Color.WHITE);
-		gameBoard.getPieceAt(5,2).setColor(Color.BLACK);
-		gameBoard.getPieceAt(5,3).setColor(Color.WHITE);
-		gameBoard.getPieceAt(5,4).setColor(Color.WHITE);
-		gameBoard.getPieceAt(5,5).setColor(Color.WHITE);
-		
-		gameBoard.getPieceAt(6,2).setColor(Color.BLACK);
-		gameBoard.getPieceAt(6,4).setColor(Color.WHITE);
-		gameBoard.getPieceAt(6,5).setColor(Color.WHITE);
-		
-		gameBoard.getPieceAt(7,2).setColor(Color.BLACK);
-		gameBoard.getPieceAt(7,3).setColor(Color.BLACK);
-		gameBoard.getPieceAt(7,4).setColor(Color.BLACK);
-		gameBoard.getPieceAt(7,5).setColor(Color.BLACK);
-		gameBoard.getPieceAt(7,6).setColor(Color.BLACK);
-		gameBoard.getPieceAt(8,3).setColor(Color.WHITE);
-		
-		//white should move on 5,1 and only 5,2 should get flipped to black
-		ArrayList<GamePiece>edgePiece = new ArrayList<GamePiece>();
-		edgePiece.add(gameBoard.getPieceAt(5,2));
-		gameBoard.flipPieces(Color.WHITE, gameBoard.getPieceAt(5,1), edgePiece);
-		
-//		assertEquals(gameBoard.computePiecesGained(gameBoard.getPieceAt(5,1), gameBoard.getPieceAt(5,2)), 1);
-		assertEquals(gameBoard.computePiecesGained(gameBoard.getPieceAt(5,1)), 1);
-	}
+	
 }
