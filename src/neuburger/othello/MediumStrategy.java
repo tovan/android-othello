@@ -18,7 +18,7 @@ public class MediumStrategy implements Strategy {
 		int playersColor = computerPlayer.getOppositeColor(computerColor);
 		GamePiece bestPiece = null;
 		for (GamePiece piece : potentialMoves) {
-			// computes 2 tiers of 'predicting'
+			// computes 1 tier of 'predicting'
 			int potentialPiecesGained = computerPlayer.computePiecesGained(piece);
 			piece.setPiecesGained(potentialPiecesGained);
 			ArrayList<GamePiece> potentialPlayerMoves = boardController.getPossibleMoves(playersColor);

@@ -66,9 +66,9 @@ public class ComputerPlayer {
 	}
 	protected GamePiece getPieceWithMaxGain(ArrayList<GamePiece> potentialMoves){
 		int maxPiecesGained = computePiecesGained(potentialMoves.get(0));	//set max to gain of first piece
-		GamePiece pieceWithMaxGain =  potentialMoves.get(0);;
+		GamePiece pieceWithMaxGain =  potentialMoves.get(0);	
 		for(int ctr = 1; ctr < potentialMoves.size(); ctr++){
-			int potentialPiecesGained = computePiecesGained(potentialMoves.get(ctr));
+			int potentialPiecesGained = potentialMoves.get(ctr).getLongTermGain();
 			if(potentialPiecesGained > maxPiecesGained){
 				maxPiecesGained =  potentialPiecesGained;
 				pieceWithMaxGain = potentialMoves.get(ctr);

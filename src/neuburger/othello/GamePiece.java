@@ -96,7 +96,7 @@ public class GamePiece {
 	}
 	public void setPiecesGained(int piecesGained) {
 		this.piecesGained = piecesGained;
-		this.longTermGain = piecesGained;
+		this.longTermGain += piecesGained;
 	}
 	public void switchPiecesGained(int number){
 		this.longTermGain -= number;
