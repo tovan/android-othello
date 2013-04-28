@@ -18,7 +18,7 @@ public class ComputerPlayer {
 		this.board = b;
 		this.boardController = oper;
 		this.gameBoard = gb;
-		this.strategy = new HardStrategy(this);
+		this.strategy = new EasyStrategy(this);
 	}
 	public void setStrategy(StrategyEnum s){
 		switch(s){
