@@ -23,7 +23,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	private BoardView boardView;
 	private TranslatePointToBox translatePointToBox;
 	private GameBoard gameBoard;
-	private ComputerPlayer CPU;
+	private ComputerPlayer computerPlayer;
 	private Button finishButton;
 	private Button hintForWhiteButton;
 	private Button hintForBlackButton;
@@ -56,7 +56,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 			}
 			else if (gameInProgress()){
 				newNumPlayers = 1;
-				stopPlayer();
+				stopAlert();
 				}
 			else{
 				gameBoard.setNumPlayers(1);
@@ -71,7 +71,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 			}
 			else if (gameInProgress()){
 				newNumPlayers = 2;
-				stopPlayer();
+				stopAlert();
 			}
 			else{
 				gameBoard.setNumPlayers(2);
@@ -84,7 +84,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 		case R.id.userIsBlack:
 			if (gameInProgress()){
 				newNumPlayers = 1;
-				stopPlayer();
+				stopAlert();
 			}
 			else{
 				playersColor = Color.BLACK;
@@ -121,7 +121,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
 	public boolean gameInProgress() {
 		return gameBoard.numPiecesOfColor(Color.BLACK)>2 || gameBoard.numPiecesOfColor(Color.WHITE) >2;
 	}
-	public void stopPlayer(){
+	public void stopAlert(){
 		AlertDialog.Builder popUpAlert  = new AlertDialog.Builder(this);
 
 		popUpAlert.setMessage("Switching the number of players in middle of a game will restart your game. " +
@@ -160,7 +160,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
         boardView = (BoardView)this.findViewById(R.id.boardView);
         
         gameBoard = boardView.getGameBoard();
-        CPU = gameBoard.getComputerPlayer();
+        computerPlayer = gameBoard.getComputerPlayer();
         
     	boardView.setOnTouchListener(this);
         translatePointToBox = new TranslatePointToBox();
@@ -206,7 +206,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
     	boardView.invalidate();
     }
 	public void makeComputerMove(int computerColor) {
-		boolean movePossible = CPU.makeComputerMove(computerColor);
+		boolean movePossible = computerPlayer.makeComputerMove(computerColor);
 		if (movePossible == false){
 			Toast toast = Toast.makeText(this, "No moves possible!", Toast.LENGTH_LONG);
 			toast.show();
