@@ -10,7 +10,9 @@ public class GameBoard {
 	private ComputerPlayer computerPlayer;
 	private BoardController boardController;
 	
-
+	/**
+	 * Used to paint visual cues on board 
+	 */
 	private GamePiece lastMove;
 	private int numPlayers;
 
@@ -30,7 +32,6 @@ public class GameBoard {
 		board[4][5] = new GamePiece(4, 5, Color.WHITE);
 		board[5][4] = new GamePiece(5, 4, Color.WHITE);
 		board[5][5] = new GamePiece(5, 5, Color.BLACK);
-
 	}
 
 	public boolean makeMove(int color, int x, int y) {
@@ -50,21 +51,14 @@ public class GameBoard {
 		return madeMove;
 	}
 
-	// will be used when I allow user to flip its own pieces
-	private void toggleColor(int x, int y) {
-		int newColor = getOppositeColor(board[x][y].getColor());
-		board[x][y].setColor(newColor);
-	}
-
-	private int getOppositeColor(Integer colorofDesiredSpot) {
-		return colorofDesiredSpot == Color.WHITE ? Color.BLACK : Color.WHITE;
-	}
-
+	/**
+	 * Returns the first possible move, can add AI to make it suggest the ideal move
+	 * @param playersColor
+	 * @return
+	 */
 	public GamePiece provideHint(int playersColor) {
 		ArrayList<GamePiece> possibleMoves = boardController
 				.getPossibleMoves(playersColor);
-		// for now it returns the first possible move, must add AI to make it
-		// the ideal suggested move
 		return possibleMoves.get(0);
 	}
 
@@ -109,7 +103,7 @@ public class GameBoard {
 		return boardController;
 	}
 
-	public ComputerPlayer getCPU() {
+	public ComputerPlayer getComputerPlayer() {
 		return this.computerPlayer;
 	}
 
