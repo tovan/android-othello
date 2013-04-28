@@ -160,7 +160,7 @@ public class MainActivity extends Activity implements OnTouchListener  {
         boardView = (BoardView)this.findViewById(R.id.boardView);
         
         gameBoard = boardView.getGameBoard();
-        CPU = gameBoard.getCPU();
+        CPU = gameBoard.getComputerPlayer();
         
     	boardView.setOnTouchListener(this);
         translatePointToBox = new TranslatePointToBox();
